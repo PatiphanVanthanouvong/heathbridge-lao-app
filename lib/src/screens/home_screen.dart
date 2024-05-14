@@ -63,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.height);
     return Scaffold(
       body: Stack(
         children: [
@@ -124,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             left: 0,
             right: 0,
             bottom: 100,
-            height: MediaQuery.of(context).size.height * 0.193,
+            height: MediaQuery.of(context).size.height * 0.2,
             child: PageView.builder(
               controller: pageController,
               onPageChanged: (value) {
@@ -143,46 +144,49 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   color: Colors.white,
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(15),
+                          ),
+                          child: Container(
+                            height: 90,
+                            color: Colors.black,
+                          ),
                         ),
-                        child: Container(
-                          height: 90,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.title ?? '',
-                              style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
-                            ),
-                            const SizedBox(height: 5),
-                            Row(children: [
-                              SvgPicture.asset("assets/icons/calling-icon.svg"),
-                              const SizedBox(width: 5),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Text(
-                                item.contact ?? '',
+                                item.title ?? '',
                                 style: const TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black),
                               ),
-                            ])
-                          ],
+                              const SizedBox(height: 5),
+                              Row(children: [
+                                SvgPicture.asset(
+                                    "assets/icons/calling-icon.svg"),
+                                const SizedBox(width: 5),
+                                Text(
+                                  item.contact ?? '',
+                                  style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                ),
+                              ])
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -194,8 +198,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: Center(
               child: InkWell(
                 onTap: () {
-                  // _animatedMapMove(AppConstants.myLocation, 14);
-                  context.push("/detail");
+                  _animatedMapMove(AppConstants.myLocation, 14);
+                  // context.push("/detail");
                 },
                 child: CircleAvatar(
                   radius: 18,
@@ -205,6 +209,53 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
+          ),
+          Positioned(
+            // right: 0,
+            bottom: MediaQuery.of(context).size.height / 1.2,
+
+            top: 10,
+            left: 20,
+            child: InkWell(
+                onTap: () {
+                  context.push("/search");
+                },
+                child: SizedBox(
+                  // decoration: const BoxDecoration(color: Colors.amber),
+                  width: MediaQuery.of(context).size.width / 1.1,
+                  height: 150,
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextField(
+                        enabled: false, // Makes the text field non-editable
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.search),
+                          hintText: 'Search...',
+                          filled: true,
+                          fillColor: Colors.white, // Background color
+                          border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
+                            borderSide: BorderSide(
+                              color: Colors.green, // Border color
+                              width: 2.0, // Border width
+                            ),
+                          ),
+                          isDense: true,
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(40.0)),
+                            borderSide: BorderSide(
+                              color: Colors.green, // Border color when disabled
+                              width: 2.0, // Border width
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
           ),
         ],
       ),

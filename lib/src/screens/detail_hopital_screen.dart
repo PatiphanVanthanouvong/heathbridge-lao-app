@@ -26,7 +26,7 @@ class HospitalDetailPage extends StatelessWidget {
                       color: Colors.white.withOpacity(0.8),
                       borderRadius: BorderRadius.circular(25.0),
                     ),
-                    child: TextField(
+                    child: const TextField(
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Mahosot Hospital',
@@ -43,7 +43,7 @@ class HospitalDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Mahosot Hospital',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
@@ -51,7 +51,7 @@ class HospitalDetailPage extends StatelessWidget {
                     'โรงพยาบาลมะโหสถ',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
-                  Row(
+                  const Row(
                     children: [
                       Icon(Icons.star, color: Colors.orange),
                       Text('4.0'),
@@ -61,8 +61,8 @@ class HospitalDetailPage extends StatelessWidget {
                       Text('Government hospital'),
                     ],
                   ),
-                  SizedBox(height: 8),
-                  Row(
+                  const SizedBox(height: 8),
+                  const Row(
                     children: [
                       Icon(Icons.location_on),
                       SizedBox(width: 8),
@@ -71,16 +71,16 @@ class HospitalDetailPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
-                  Row(
+                  const SizedBox(height: 8),
+                  const Row(
                     children: [
                       Icon(Icons.phone),
                       SizedBox(width: 8),
                       Text('020 29 646 290'),
                     ],
                   ),
-                  SizedBox(height: 16),
-                  Row(
+                  const SizedBox(height: 16),
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -99,10 +99,10 @@ class HospitalDetailPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
-                  Divider(),
-                  SizedBox(height: 8),
-                  ...List.generate(3, (index) => ReviewWidget()),
+                  const SizedBox(height: 16),
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  ...List.generate(3, (index) => const ReviewWidget()),
                 ],
               ),
             ),
@@ -111,13 +111,15 @@ class HospitalDetailPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        child: Icon(Icons.directions),
+        child: const Icon(Icons.directions),
       ),
     );
   }
 }
 
 class ReviewWidget extends StatelessWidget {
+  const ReviewWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -128,18 +130,19 @@ class ReviewWidget extends StatelessWidget {
             children: [
               CircleAvatar(
                 backgroundColor: Colors.grey[200],
-                child: Icon(Icons.person, color: Colors.grey),
+                child: const Icon(Icons.person, color: Colors.grey),
               ),
-              SizedBox(width: 16),
-              Column(
+              const SizedBox(width: 16),
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('ผู้ใช้งาน', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('ผู้ใช้งาน',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   Text('05/07/2024'),
                 ],
               ),
-              Spacer(),
-              Row(
+              const Spacer(),
+              const Row(
                 children: [
                   Text('5'),
                   Icon(Icons.star, color: Colors.orange),
@@ -147,21 +150,21 @@ class ReviewWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
-          Text('รีวิวจากผู้ใช้งาน...'),
+          const SizedBox(height: 8),
+          const Text('รีวิวจากผู้ใช้งาน...'),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
-                icon: Icon(Icons.thumb_up),
+                icon: const Icon(Icons.thumb_up),
                 onPressed: () {},
               ),
-              Text('2'),
+              const Text('2'),
               IconButton(
-                icon: Icon(Icons.thumb_down),
+                icon: const Icon(Icons.thumb_down),
                 onPressed: () {},
               ),
-              Text('0'),
+              const Text('0'),
             ],
           ),
         ],

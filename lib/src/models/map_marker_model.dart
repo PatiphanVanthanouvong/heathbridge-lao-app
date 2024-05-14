@@ -6,6 +6,7 @@ class MapMarker {
   final String? address;
   final LatLng? location;
   final String? contact;
+  final String? type;
 
   MapMarker({
     required this.image,
@@ -13,6 +14,7 @@ class MapMarker {
     required this.address,
     required this.location,
     required this.contact,
+    this.type,
   });
 }
 
