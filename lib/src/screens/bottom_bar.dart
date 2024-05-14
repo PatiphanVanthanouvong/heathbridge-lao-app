@@ -11,7 +11,7 @@ class _NaviPageState extends State<ControllerPage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
-    MapFlutter(),
+    HomeScreen(),
     SettingScreen(),
   ];
 

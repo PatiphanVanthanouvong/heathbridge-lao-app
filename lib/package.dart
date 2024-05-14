@@ -16,3 +16,5 @@ export 'src/constants/constants_color.dart';
 export 'src/screens/home_screen.dart';
 export 'src/screens/setting_screen.dart';
 export 'src/screens/bottom_bar.dart';
+export 'src/screens/search_screen.dart';
+export 'src/screens/detail_hopital_screen.dart';

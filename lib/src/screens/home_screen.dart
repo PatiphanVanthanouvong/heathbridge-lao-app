@@ -3,15 +3,18 @@ import 'package:heathbridge_lao/src/models/map_marker_model.dart';
 import 'package:heathbridge_lao/package.dart';
 import 'package:latlong2/latlong.dart';
 
-class MapFlutter extends StatefulWidget {
-  const MapFlutter({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<MapFlutter> createState() => _MapFlutterState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _MapFlutterState extends State<MapFlutter> with TickerProviderStateMixin {
-  final pageController = PageController();
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  final pageController = PageController(
+    initialPage: 0,
+    viewportFraction: 0.5,
+  );
   var currentLocation = AppConstants.myLocation;
 
   int selectedIndex = 0;
@@ -120,8 +123,8 @@ class _MapFlutterState extends State<MapFlutter> with TickerProviderStateMixin {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 90,
-            height: MediaQuery.of(context).size.height * 0.20,
+            bottom: 100,
+            height: MediaQuery.of(context).size.height * 0.193,
             child: PageView.builder(
               controller: pageController,
               onPageChanged: (value) {
@@ -134,77 +137,73 @@ class _MapFlutterState extends State<MapFlutter> with TickerProviderStateMixin {
               itemCount: mapMarkers.length,
               itemBuilder: (_, index) {
                 final item = mapMarkers[index];
-                return Padding(
-                  padding: const EdgeInsets.only(right: 15.0, left: 15.0),
-                  child: Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    color: const Color.fromARGB(255, 30, 29, 29),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: ListView.builder(
-                                  padding: EdgeInsets.zero,
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: item.rating,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return const Icon(
-                                      Icons.star,
-                                      color: Colors.orange,
-                                    );
-                                  },
-                                ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.title ?? '',
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      item.address ?? '',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                return Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15),
                         ),
-                        // const SizedBox(width: 10),
-                        // Expanded(
-                        //   child: Padding(
-                        //     padding: const EdgeInsets.all(4.0),
-                        //     child: ClipRRect(
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         child: Container(
-                        //           color: Colors.white,
-                        //         )),
-                        //   ),
-                        // ),
-                        const SizedBox(width: 10),
-                      ],
-                    ),
+                        child: Container(
+                          height: 90,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.title ?? '',
+                              style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            const SizedBox(height: 5),
+                            Row(children: [
+                              SvgPicture.asset("assets/icons/calling-icon.svg"),
+                              const SizedBox(width: 5),
+                              Text(
+                                item.contact ?? '',
+                                style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            ])
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
+            ),
+          ),
+          Positioned(
+            right: 15,
+            bottom: 280, // Adjust as needed
+            child: Center(
+              child: InkWell(
+                onTap: () {
+                  // _animatedMapMove(AppConstants.myLocation, 14);
+                  context.push("/detail");
+                },
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.white,
+                  child:
+                      SvgPicture.asset("assets/icons/location-targer-icon.svg"),
+                ),
+              ),
             ),
           ),
         ],

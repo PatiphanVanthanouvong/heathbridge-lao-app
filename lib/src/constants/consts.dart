@@ -6,5 +6,5 @@ class AppConstants {
       'pk.eyJ1Ijoic2hva29vbiIsImEiOiJjbHF4bTVhaTcwZmdrMmpwbnQ3b2FuOGZjIn0.LVhMtRulH3CH7Rhv-z6gFg';
 
   static const String mapBoxStyleId = 'clrkgfe35001k01o30vhh774o';
-  static const myLocation = LatLng(17.970557060788902, 102.61239019721894);
+  static const myLocation = LatLng(17.976274, 102.625639);
 }
