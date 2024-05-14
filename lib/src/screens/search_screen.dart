@@ -20,19 +20,19 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search'),
+        title: const Text('Search'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              child: TextField(
+              child: const TextField(
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Hospital',
@@ -40,24 +40,24 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             ),
-            SizedBox(height: 16.0),
-            Text(
+            const SizedBox(height: 16.0),
+            const Text(
               'Results for "Hospital"',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Expanded(
               child: ListView.builder(
                 itemCount: hospitals.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading: Icon(Icons.access_time),
-                    title: Text(
+                    leading: const Icon(Icons.access_time),
+                    title: const Text(
                       'Mahosot Hopital',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(hospitals[index]),
-                    trailing: Text('Hospital'),
+                    trailing: const Text('Hospital'),
                   );
                 },
               ),
