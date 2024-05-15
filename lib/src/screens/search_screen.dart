@@ -29,10 +29,15 @@ class _SearchPageState extends State<SearchPage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(
+                  color: ConstantColor.colorMain,
+                  width: 2.0,
+                ),
               ),
               child: const TextField(
+                autofocus: true,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Hospital',

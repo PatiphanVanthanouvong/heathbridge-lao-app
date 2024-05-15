@@ -10,10 +10,6 @@ GoRouter router = GoRouter(
       path: '/search',
       builder: (context, state) => const SearchPage(),
     ),
-    GoRoute(
-      path: '/detail',
-      builder: (context, state) => const HospitalDetailPage(),
-    )
   ],
 );
 
