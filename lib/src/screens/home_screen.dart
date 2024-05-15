@@ -2,7 +2,6 @@ import 'package:heathbridge_lao/src/constants/consts.dart';
 import 'package:heathbridge_lao/src/models/map_marker_model.dart';
 import 'package:heathbridge_lao/package.dart';
 import 'package:latlong2/latlong.dart';
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
