@@ -231,33 +231,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // TextField(
-                      //   enabled: false,
-                      //   decoration: InputDecoration(
-                      //     prefixIcon: Icon(Icons.search),
-                      //     hintText: 'Search...',
-                      //     filled: true,
-                      //     fillColor: Colors.white, // Background color
-                      //     border: OutlineInputBorder(
-                      //       borderRadius:
-                      //           BorderRadius.all(Radius.circular(10.0)),
-                      //       borderSide: BorderSide(
-                      //         color: ConstantColor.colorMain, // Border color
-                      //         width: 2.0, // Border width
-                      //       ),
-                      //     ),
-                      //     isDense: true,
-                      //     disabledBorder: OutlineInputBorder(
-                      //       borderRadius:
-                      //           BorderRadius.all(Radius.circular(40.0)),
-                      //       borderSide: BorderSide(
-                      //         color: ConstantColor
-                      //             .colorMain, // Border color when disabled
-                      //         width: 2.0, // Border width
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         decoration: BoxDecoration(
