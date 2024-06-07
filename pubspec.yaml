@@ -18,7 +18,9 @@ dependencies:
   hasura_connect: ^5.0.0+3
   flutter_launcher_icons: ^0.13.1
   provider: ^6.1.2
-  provider: ^6.1.2
+  shared_preferences: ^2.2.3
+  flutter_rating_bar: ^4.0.1
+
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +36,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icons/
+    - assets/images/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
