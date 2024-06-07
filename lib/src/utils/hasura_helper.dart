@@ -5,6 +5,7 @@ import 'hasura_token_interceptor.dart';
 
 class HasuraHelper {
   static HasuraConnect? hasuraConnect;
+
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   static HasuraConnect get hasuraHelper {

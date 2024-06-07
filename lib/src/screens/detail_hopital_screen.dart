@@ -1,171 +1,120 @@
+import 'package:flutter/material.dart';
 import 'package:heathbridge_lao/package.dart';
 
-class HospitalDetailPage extends StatelessWidget {
-  const HospitalDetailPage({super.key});
+class HospitalDetailScreen extends StatelessWidget {
+  const HospitalDetailScreen({super.key});
+  final int rating = 3;
+  final int reviews = 40;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          children: [
-            Stack(
-              children: [
-                Image.network(
-                  'https://example.com/hospital_image.jpg', // Replace with actual image URL
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  right: 16,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    child: const TextField(
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Mahosot Hospital',
-                        prefixIcon: Icon(Icons.search),
-                        suffixIcon: Icon(Icons.clear),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+    return SizedBox(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height * 0.75,
+      child: Column(
+        children: [
+          const SizedBox(height: 15),
+          const SizedBox(
+            width: 120,
+            child: Divider(
+              color: Colors.grey,
+              thickness: 4,
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+          ),
+          const SizedBox(height: 15),
+          Expanded(
+            child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Mahosot Hospital',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  Container(
+                    height: 220,
+                    width: double.infinity,
+                    color: Colors.black,
                   ),
-                  Text(
-                    'โรงพยาบาลมะโหสถ',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                  ),
-                  const Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.orange),
-                      Text('4.0'),
-                      SizedBox(width: 8),
-                      Text('(80)'),
-                      SizedBox(width: 8),
-                      Text('Government hospital'),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Row(
-                    children: [
-                      Icon(Icons.location_on),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text('XJ67+326 โรงพยาบาลมะโหสถ, Vientiane'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Row(
-                    children: [
-                      Icon(Icons.phone),
-                      SizedBox(width: 8),
-                      Text('020 29 646 290'),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Overview',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Mahosot Hospital",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 23),
                         ),
-                      ),
-                      Text(
-                        'Reviews',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.blue,
+                        const SizedBox(height: 5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "ໂຮງໝໍມະໂຫສົດ",
+                                  style: TextStyle(
+                                      fontSize: 13, color: Colors.black),
+                                ),
+                                const SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Text("($rating)",
+                                        style: const TextStyle(
+                                            fontSize: 13, color: Colors.grey)),
+                                    const SizedBox(width: 5),
+                                    SizedBox(
+                                      height: 15,
+                                      width: 75,
+                                      child: ListView.builder(
+                                        padding: EdgeInsets.zero,
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: 5,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return Icon(
+                                            Icons.star,
+                                            color: index < rating
+                                                ? Colors.orange
+                                                : Colors.grey,
+                                            size: 15,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text("($reviews)",
+                                        style: const TextStyle(
+                                            fontSize: 13, color: Colors.grey)),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                const Text("Government hospital",
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey))
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.blue,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.directions),
+                                    color: Colors.white,
+                                    onPressed: () {},
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                const Text("Directions",
+                                    style: TextStyle(fontSize: 13)),
+                              ],
+                            )
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  ...List.generate(3, (index) => const ReviewWidget()),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.directions),
-      ),
-    );
-  }
-}
-
-class ReviewWidget extends StatelessWidget {
-  const ReviewWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: Colors.grey[200],
-                child: const Icon(Icons.person, color: Colors.grey),
-              ),
-              const SizedBox(width: 16),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('ผู้ใช้งาน',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text('05/07/2024'),
-                ],
-              ),
-              const Spacer(),
-              const Row(
-                children: [
-                  Text('5'),
-                  Icon(Icons.star, color: Colors.orange),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Text('รีวิวจากผู้ใช้งาน...'),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.thumb_up),
-                onPressed: () {},
-              ),
-              const Text('2'),
-              IconButton(
-                icon: const Icon(Icons.thumb_down),
-                onPressed: () {},
-              ),
-              const Text('0'),
-            ],
           ),
         ],
       ),

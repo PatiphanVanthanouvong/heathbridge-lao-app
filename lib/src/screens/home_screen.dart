@@ -103,16 +103,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           _animatedMapMove(currentLocation, 14);
                           setState(() {});
                         },
-                        child: AnimatedScale(
-                          duration: const Duration(milliseconds: 500),
-                          scale: selectedIndex == i ? 1 : 0.7,
-                          child: AnimatedOpacity(
-                              duration: const Duration(milliseconds: 500),
-                              opacity: selectedIndex == i ? 1 : 0.5,
-                              child: const Icon(
-                                Icons.location_on,
-                                color: Colors.red,
-                              )),
+                        child: GestureDetector(
+                          onDoubleTap: () {
+                            showBottomSheet(
+                                context: context,
+                                builder: (ctx) => const HospitalDetailScreen());
+                          },
+                          child: AnimatedScale(
+                            duration: const Duration(milliseconds: 500),
+                            scale: selectedIndex == i ? 1 : 0.7,
+                            child: AnimatedOpacity(
+                                duration: const Duration(milliseconds: 500),
+                                opacity: selectedIndex == i ? 1 : 0.5,
+                                child: const Icon(
+                                  Icons.location_on,
+                                  color: Colors.red,
+                                )),
+                          ),
                         ),
                       ),
                     ),
@@ -210,45 +217,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           Positioned(
-            // right: 0,
             bottom: MediaQuery.of(context).size.height / 1.2,
-
-            top: 10,
+            top: 15,
             left: 20,
             child: InkWell(
                 onTap: () {
                   context.push("/search");
                 },
                 child: SizedBox(
-                  // decoration: const BoxDecoration(color: Colors.amber),
                   width: MediaQuery.of(context).size.width / 1.1,
                   height: 150,
-                  child: const Column(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextField(
-                        enabled: false, // Makes the text field non-editable
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.search),
-                          hintText: 'Search...',
-                          filled: true,
-                          fillColor: Colors.white, // Background color
-                          border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0)),
-                            borderSide: BorderSide(
-                              color: Colors.green, // Border color
-                              width: 2.0, // Border width
-                            ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15.0),
+                          border: Border.all(
+                            color: ConstantColor.colorMain,
+                            width: 2.0,
                           ),
-                          isDense: true,
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(40.0)),
-                            borderSide: BorderSide(
-                              color: Colors.green, // Border color when disabled
-                              width: 2.0, // Border width
-                            ),
+                        ),
+                        child: const TextField(
+                          enabled: false,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Search',
+                            icon: Icon(Icons.search),
                           ),
                         ),
                       ),
