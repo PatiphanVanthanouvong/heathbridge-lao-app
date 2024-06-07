@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:heathbridge_lao/package.dart';
 import 'package:heathbridge_lao/src/provider/facilities_provider.dart';
+import 'package:heathbridge_lao/src/provider/service_provder.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -18,13 +19,13 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         // ChangeNotifierProvider(create: (context) => appLanguage),
         ChangeNotifierProvider(create: (_) => FacilityProvider()),
+        ChangeNotifierProvider(create: (_) => ServiceProvider()),
       ],
       child: MaterialApp.router(
         title: 'Flutter Demo',

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "279754083156",
+    "project_id": "finding-web",
+    "storage_bucket": "finding-web.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279754083156:android:1d2ff7b643f3974491d6c1",
+        "android_client_info": {
+          "package_name": "com.example.heathbridge_lao"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQ64vVRfu9fOm-OLe4ZEnpwpt7VLAX6Oo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

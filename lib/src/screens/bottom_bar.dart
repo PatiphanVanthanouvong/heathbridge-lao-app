@@ -28,6 +28,7 @@ class _NaviPageState extends State<ControllerPage> {
         child: SizedBox(
           height: 80,
           child: BottomNavigationBar(
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
             unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
             currentIndex: _currentIndex,
             onTap: (index) {
@@ -37,17 +38,23 @@ class _NaviPageState extends State<ControllerPage> {
             },
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  'assets/icons/home-icon.svg',
+                icon: SizedBox(
+                  width: 23,
+                  height: 23,
+                  child: SvgPicture.asset(
+                    'assets/icons/home-icon.svg',
+                    color: ConstantColor.colorMain,
+                  ),
                 ),
                 label: "Home",
               ),
               BottomNavigationBarItem(
                 icon: SizedBox(
-                  height: 24,
-                  width: 24,
+                  width: 23,
+                  height: 23,
                   child: SvgPicture.asset(
                     'assets/icons/setting-icon.svg',
+                    color: ConstantColor.colorMain,
                   ),
                 ),
                 label: "Setting",
