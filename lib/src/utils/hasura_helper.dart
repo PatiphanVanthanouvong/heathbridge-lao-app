@@ -21,3 +21,4 @@ class HasuraHelper {
     return hasuraConnect!;
   }
 }
+

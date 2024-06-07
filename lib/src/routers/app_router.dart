@@ -1,4 +1,8 @@
 import 'package:heathbridge_lao/package.dart';
+import 'package:heathbridge_lao/src/screens/search_screen.dart';
+
+import '../screens/login/sign_in_screen.dart';
+import '../screens/login/sign_up_screen.dart';
 
 GoRouter router = GoRouter(
   routes: [
@@ -11,7 +15,9 @@ GoRouter router = GoRouter(
     GoRoute(
         path: "/setpassword",
         builder: (context, state) => const SetPasswordScreen()),
-    GoRoute(path: "/controller_page", builder: (context, state) => const ControllerPage()),
+    GoRoute(
+        path: "/controller_page",
+        builder: (context, state) => const ControllerPage()),
     GoRoute(
       path: '/search',
       builder: (context, state) => const SearchPage(),

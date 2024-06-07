@@ -1,7 +1,10 @@
 import 'package:heathbridge_lao/src/constants/consts.dart';
-import 'package:heathbridge_lao/src/models/map_marker_model.dart';
 import 'package:heathbridge_lao/package.dart';
+import 'package:heathbridge_lao/src/provider/facilities_provider.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
+
+import 'detail/fac_detail.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,6 +27,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     mapController = MapController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FacilityProvider>().getFacInfo();
+    });
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
@@ -63,199 +69,316 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.height);
+    // print(MediaQuery.of(context).size.height);
     return Scaffold(
-      body: Stack(
-        children: [
-          FlutterMap(
-            mapController: mapController,
-            options: MapOptions(
-                minZoom: 5,
-                maxZoom: 18,
-                initialZoom: 14,
-                initialCenter: currentLocation),
-            children: [
-              TileLayer(
-                urlTemplate:
-                    "https://api.mapbox.com/styles/v1/shokoon/{mapStyleId}/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}",
-                additionalOptions: const {
-                  'accessToken':
-                      "pk.eyJ1Ijoic2hva29vbiIsImEiOiJjbHJvbDMwMGgxMGcxMnFxanEzcmd2aHRtIn0.MtR09PVeAegNhumGfXcppA",
-                  'mapStyleId': "clrom0wu7007i01pe7quyey3t",
-                },
+      extendBodyBehindAppBar: true,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80), // Adjust the height as needed
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          elevation: 0, // Remove elevation if not needed
+          centerTitle: true,
+          actions: [
+            Container(
+              margin: const EdgeInsets.only(right: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: ConstantColor.colorMain,
+                  width: 2.0,
+                ),
               ),
-              MarkerLayer(
-                markers: [
-                  for (int i = 0; i < mapMarkers.length; i++)
-                    Marker(
-                      height: 40,
-                      width: 40,
-                      point: mapMarkers[i].location ?? AppConstants.myLocation,
-                      child: GestureDetector(
-                        onTap: () {
-                          pageController.animateToPage(
-                            i,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                          selectedIndex = i;
-                          currentLocation =
-                              mapMarkers[i].location ?? AppConstants.myLocation;
-                          _animatedMapMove(currentLocation, 14);
-                          setState(() {});
-                        },
-                        child: GestureDetector(
-                          onDoubleTap: () {
-                            showBottomSheet(
-                                context: context,
-                                builder: (ctx) => const HospitalDetailScreen());
-                          },
-                          child: AnimatedScale(
-                            duration: const Duration(milliseconds: 500),
-                            scale: selectedIndex == i ? 1 : 0.7,
-                            child: AnimatedOpacity(
-                                duration: const Duration(milliseconds: 500),
-                                opacity: selectedIndex == i ? 1 : 0.5,
-                                child: const Icon(
-                                  Icons.location_on,
-                                  color: Colors.red,
-                                )),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
+              width: 50,
+              height: 50,
+              child: IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.refresh),
               ),
-            ],
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 100,
-            height: MediaQuery.of(context).size.height * 0.2,
-            child: PageView.builder(
-              controller: pageController,
-              onPageChanged: (value) {
-                selectedIndex = value;
-                currentLocation =
-                    mapMarkers[value].location ?? AppConstants.myLocation;
-                _animatedMapMove(currentLocation, 14);
-                setState(() {});
-              },
-              itemCount: mapMarkers.length,
-              itemBuilder: (_, index) {
-                final item = mapMarkers[index];
-                return Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  color: Colors.white,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(15),
-                            topRight: Radius.circular(15),
-                          ),
-                          child: Container(
-                            height: 90,
-                            color: Colors.black,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.title ?? '',
-                                style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
-                              ),
-                              const SizedBox(height: 5),
-                              Row(children: [
-                                SvgPicture.asset(
-                                    "assets/icons/calling-icon.svg"),
-                                const SizedBox(width: 5),
-                                Text(
-                                  item.contact ?? '',
-                                  style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                ),
-                              ])
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
             ),
-          ),
-          Positioned(
-            right: 15,
-            bottom: 280, // Adjust as needed
-            child: Center(
-              child: InkWell(
-                onTap: () {
-                  _animatedMapMove(AppConstants.myLocation, 14);
-                  // context.push("/detail");
-                },
-                child: CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Colors.white,
-                  child:
-                      SvgPicture.asset("assets/icons/location-targer-icon.svg"),
+          ],
+          title: InkWell(
+            onTap: () {
+              context.push("/search");
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15.0),
+                border: Border.all(
+                  color: ConstantColor.colorMain,
+                  width: 2.0,
+                ),
+              ),
+              child: const TextField(
+                enabled: false,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Search',
+                  icon: Icon(Icons.search),
                 ),
               ),
             ),
           ),
-          Positioned(
-            bottom: MediaQuery.of(context).size.height / 1.2,
-            top: 15,
-            left: 20,
-            child: InkWell(
+        ),
+      ),
+      body: Consumer<FacilityProvider>(builder: (context, provider, child) {
+        if (provider.isGettingFacInfo) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (provider.facData.isEmpty) {
+          return const Center(
+            child: Text('No facilities found'),
+          );
+        }
+        final markers = provider.facData.map(
+          (facility) {
+            final lat = double.tryParse(facility.latitude ?? '0') ?? 0;
+            final lng = double.tryParse(facility.longitude ?? '0') ?? 0;
+            final location = LatLng(lat, lng);
+            // Define the default icon color
+            Color iconColor = Colors.black;
+
+            // Check the facility type and update the icon color accordingly
+            if (facility.facilityType!.nameEn?.toLowerCase() == 'hospital') {
+              iconColor = Colors.green;
+            } else if (facility.facilityType!.nameEn?.toLowerCase() ==
+                'pharmacy') {
+              iconColor = Colors.blue;
+            } else if (facility.facilityType!.nameEn?.toLowerCase() ==
+                'clinic') {
+              iconColor = Colors.yellow;
+            }
+            return Marker(
+              height: 40,
+              width: 40,
+              point: location,
+              // Use child directly instead of builder
+              child: GestureDetector(
                 onTap: () {
-                  context.push("/search");
+                  final index = provider.facData.indexOf(facility);
+                  pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                  );
+                  selectedIndex = index;
+                  currentLocation = location;
+                  _animatedMapMove(currentLocation, 14);
+                  setState(() {});
                 },
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width / 1.1,
-                  height: 150,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15.0),
-                          border: Border.all(
-                            color: ConstantColor.colorMain,
-                            width: 2.0,
-                          ),
-                        ),
-                        child: const TextField(
-                          enabled: false,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Search',
-                            icon: Icon(Icons.search),
-                          ),
+                onDoubleTap: () {
+                  showBottomSheet(
+                    context: context,
+                    builder: (ctx) => const HospitalDetailScreen(),
+                  );
+                },
+                child: AnimatedScale(
+                  duration: const Duration(milliseconds: 500),
+                  scale: selectedIndex == provider.facData.indexOf(facility)
+                      ? 1
+                      : 0.7,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 500),
+                    opacity: selectedIndex == provider.facData.indexOf(facility)
+                        ? 1
+                        : 0.5,
+                    child: Icon(Icons.location_on, color: iconColor, size: 38),
+                  ),
+                ),
+              ),
+            );
+          },
+        ).toList();
+        return Stack(
+          children: [
+            FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                  minZoom: 5,
+                  maxZoom: 18,
+                  initialZoom: 14,
+                  initialCenter: currentLocation),
+              children: [
+                TileLayer(
+                  urlTemplate:
+                      "https://api.mapbox.com/styles/v1/shokoon/{mapStyleId}/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}",
+                  additionalOptions: const {
+                    'accessToken':
+                        "pk.eyJ1Ijoic2hva29vbiIsImEiOiJjbHJvbDMwMGgxMGcxMnFxanEzcmd2aHRtIn0.MtR09PVeAegNhumGfXcppA",
+                    'mapStyleId': "clrom0wu7007i01pe7quyey3t",
+                  },
+                  tileProvider: NetworkTileProvider(),
+                ),
+                MarkerLayer(markers: markers),
+              ],
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 60,
+              height: MediaQuery.of(context).size.height * 0.2,
+              child: PageView.builder(
+                controller: pageController,
+                onPageChanged: (value) {
+                  selectedIndex = value;
+                  final facility = provider.facData[value];
+                  currentLocation = LatLng(
+                    double.tryParse(facility.latitude ?? '0') ?? 0,
+                    double.tryParse(facility.longitude ?? '0') ?? 0,
+                  );
+                  _animatedMapMove(currentLocation, 14);
+                  setState(() {});
+                },
+                itemCount: provider.facData.length,
+                itemBuilder: (_, index) {
+                  final facility = provider.facData[index];
+                  return GestureDetector(
+                    onTap: () {
+                      print("run funtions");
+                      context
+                          .read<FacilityProvider>()
+                          .getDetailEach(facId: facility.facId!);
+                      showBottomSheet(
+                        context: context,
+                        builder: (ctx) => FacDetail(facId: facility.facId!),
+                      );
+                    },
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      color: Colors.white,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(15),
+                                topRight: Radius.circular(15),
+                              ),
+                              child: Container(
+                                height: 90,
+                                width: double.infinity,
+                                color: Colors.white,
+                                child: facility.imageUrl == null ||
+                                        facility.imageUrl == ""
+                                    ? const Center(
+                                        child: Text(
+                                          "No image yet",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      )
+                                    : Image.network(
+                                        facility.imageUrl!,
+                                        fit: BoxFit.scaleDown,
+                                        loadingBuilder: (BuildContext context,
+                                            Widget child,
+                                            ImageChunkEvent? loadingProgress) {
+                                          if (loadingProgress == null) {
+                                            return child;
+                                          } else {
+                                            return const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          }
+                                        },
+                                        errorBuilder: (BuildContext context,
+                                            Object error,
+                                            StackTrace? stackTrace) {
+                                          return const Center(
+                                            child: Text(
+                                              "Failed to load image",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    facility.name ?? '',
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        overflow: TextOverflow.ellipsis),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        facility.facilityType?.type ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 2,
+                                      ),
+                                      Text(
+                                        facility.facilityType?.nameEn ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              right: 15,
+              bottom: 280,
+              child: Center(
+                child: InkWell(
+                  onTap: () {
+                    _animatedMapMove(AppConstants.myLocation, 14);
+                    // context.push("/detail");
+                  },
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.white,
+                    child: SvgPicture.asset(
+                        "assets/icons/location-targer-icon.svg"),
                   ),
-                )),
-          ),
-        ],
-      ),
+                ),
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }
