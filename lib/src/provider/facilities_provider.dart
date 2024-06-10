@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:hasura_connect/hasura_connect.dart';
-import 'package:heathbridge_lao/src/models/facilities_model.dart';
-import 'package:heathbridge_lao/src/utils/hasura_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:heathbridge_lao/package.dart';
 
 class FacilityProvider extends ChangeNotifier {
   List<Facilities> _facData = [];

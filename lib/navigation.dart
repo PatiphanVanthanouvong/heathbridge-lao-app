@@ -1,19 +1,33 @@
 import 'package:heathbridge_lao/package.dart';
 
-class ControllerPage extends StatefulWidget {
-  const ControllerPage({super.key});
+class Navigation extends StatefulWidget {
+  const Navigation({super.key});
 
   @override
-  State<ControllerPage> createState() => _NaviPageState();
+  State<Navigation> createState() => _NavigationState();
 }
 
-class _NaviPageState extends State<ControllerPage> {
+class _NavigationState extends State<Navigation> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
     HomeScreen(),
     SettingScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAuth();
+    });
+  }
+  void _checkAuth() {
+    var auth = FirebaseAuth.instance;
+    if (auth.currentUser == null) {
+      context.go("/");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,18 +40,16 @@ class _NaviPageState extends State<ControllerPage> {
           topRight: Radius.circular(20),
         ),
         child: SizedBox(
-          height: 80,
-          child: BottomNavigationBar(
-            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            currentIndex: _currentIndex,
-            onTap: (index) {
+          height: 91,
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
               setState(() {
                 _currentIndex = index;
               });
             },
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
+            destinations:  <NavigationDestination>[
+              NavigationDestination(
                 icon: SizedBox(
                   width: 23,
                   height: 23,
@@ -46,9 +58,9 @@ class _NaviPageState extends State<ControllerPage> {
                     color: ConstantColor.colorMain,
                   ),
                 ),
-                label: "Home",
+                label: 'Home',
               ),
-              BottomNavigationBarItem(
+              NavigationDestination(
                 icon: SizedBox(
                   width: 23,
                   height: 23,
@@ -57,7 +69,7 @@ class _NaviPageState extends State<ControllerPage> {
                     color: ConstantColor.colorMain,
                   ),
                 ),
-                label: "Setting",
+                label: 'Setting',
               ),
             ],
           ),

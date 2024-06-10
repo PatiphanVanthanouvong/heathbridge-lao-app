@@ -1,13 +1,20 @@
 import 'package:heathbridge_lao/package.dart';
 
 class SetPasswordScreen extends StatefulWidget {
-  const SetPasswordScreen({super.key});
+  const SetPasswordScreen({super.key, required this.firstname, required this.lastname, required this.email, required this.tel, required this.gender});
+  final String firstname;
+  final String lastname;
+  final String email;
+  final String tel;
+  final String gender;
 
   @override
   State<SetPasswordScreen> createState() => _SetPasswordScreenState();
 }
 
 class _SetPasswordScreenState extends State<SetPasswordScreen> {
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   bool _obscureText1 = true;
   bool _obscureText2 = true;
 
@@ -42,6 +49,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
             ),
             const SizedBox(height: 30),
             TextField(
+              controller: _passwordController,
               obscureText: _obscureText1,
               decoration: InputDecoration(
                 hintText: 'Enter Your Password',
@@ -62,6 +70,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
             ),
             const SizedBox(height: 20),
             TextField(
+              controller: _confirmPasswordController,
               obscureText: _obscureText2,
               decoration: InputDecoration(
                 hintText: 'Confirm Password',
@@ -89,8 +98,30 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  context.push("/controller_page");
+                onPressed: () async{
+                  final String telNumber = "+856${widget.tel}";
+                  if(_passwordController.text.isNotEmpty && _passwordController.text == _confirmPasswordController.text){
+                    UserModel newUser = UserModel(
+                      firstname: widget.firstname,
+                      lastname: widget.lastname,
+                      gender: widget.gender,
+                      tel: widget.tel,
+                      email: widget.email,
+                      password: _passwordController.text,
+                    );
+                    // print(context.read<UserProvider>().userModel);
+                    await FirebaseAuth.instance.verifyPhoneNumber(
+                      phoneNumber: telNumber,
+                      verificationCompleted:
+                          (PhoneAuthCredential credential) {},
+                      verificationFailed: (FirebaseAuthException e) {},
+                      codeSent: (String verificationId, int? resendToken) {
+                        context.push("/otp/$verificationId");
+                      },
+                      codeAutoRetrievalTimeout: (String verificationId) {},
+                    );
+                    await context.read<UserProvider>().addUser(newUser);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ConstantColor.colorMain,

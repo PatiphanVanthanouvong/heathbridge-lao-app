@@ -1,6 +1,4 @@
 import 'package:heathbridge_lao/package.dart';
-import 'package:heathbridge_lao/src/provider/facilities_provider.dart';
-import 'package:provider/provider.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});

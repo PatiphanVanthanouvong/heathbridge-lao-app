@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:heathbridge_lao/src/provider/facilities_provider.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:heathbridge_lao/package.dart';
 
 class FacDetail extends StatefulWidget {
   const FacDetail({super.key, required this.facId});

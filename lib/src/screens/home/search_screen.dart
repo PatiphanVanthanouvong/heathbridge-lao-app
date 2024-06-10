@@ -1,9 +1,4 @@
-import 'dart:developer';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/material.dart';
 import 'package:heathbridge_lao/package.dart';
-import 'package:heathbridge_lao/src/provider/facilities_provider.dart';
-import 'package:provider/provider.dart';
 
 final TextEditingController _searchController = TextEditingController();
 List<String> _searchResults = [];
@@ -15,7 +10,7 @@ class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
   @override
-  _SearchPageState createState() => _SearchPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {

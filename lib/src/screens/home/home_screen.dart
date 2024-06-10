@@ -1,10 +1,5 @@
-import 'package:heathbridge_lao/src/constants/consts.dart';
 import 'package:heathbridge_lao/package.dart';
-import 'package:heathbridge_lao/src/provider/facilities_provider.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:provider/provider.dart';
-
-import 'detail/fac_detail.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -173,9 +168,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   setState(() {});
                 },
                 onDoubleTap: () {
+                  context
+                      .read<FacilityProvider>()
+                      .getDetailEach(facId: facility.facId!);
                   showBottomSheet(
                     context: context,
-                    builder: (ctx) => const HospitalDetailScreen(),
+                    builder: (ctx) => FacDetail(facId: facility.facId!),
                   );
                 },
                 child: AnimatedScale(
@@ -221,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Positioned(
               left: 0,
               right: 0,
-              bottom: 60,
+              bottom: 100,
               height: MediaQuery.of(context).size.height * 0.2,
               child: PageView.builder(
                 controller: pageController,

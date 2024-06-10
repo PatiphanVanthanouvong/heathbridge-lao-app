@@ -1,11 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:heathbridge_lao/firebase_options.dart';
 import 'package:heathbridge_lao/package.dart';
-import 'package:heathbridge_lao/src/provider/facilities_provider.dart';
-import 'package:heathbridge_lao/src/provider/service_provder.dart';
-import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   print('Initializing dotenv');
   try {
     await dotenv.load(fileName: ".env");
@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
         // ChangeNotifierProvider(create: (context) => appLanguage),
         ChangeNotifierProvider(create: (_) => FacilityProvider()),
         ChangeNotifierProvider(create: (_) => ServiceProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MaterialApp.router(
         title: 'Flutter Demo',
