@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heathbridge_lao/package.dart';
 import 'package:provider/provider.dart';
 import 'package:heathbridge_lao/src/provider/facilities_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -36,7 +37,7 @@ class _FacDetailState extends State<FacDetail>
     return Consumer<FacilityProvider>(builder: (context, provider, child) {
       return DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.6,
+        initialChildSize: 0.7,
         maxChildSize: 1.0,
         minChildSize: 0.5,
         shouldCloseOnMinExtent: true,
@@ -343,7 +344,7 @@ class _FacDetailState extends State<FacDetail>
                                             color: Colors.amber,
                                           ),
                                           onRatingUpdate: (rating) {
-                                            print(rating);
+                                            context.push("/review");
                                           },
                                         ),
                                         const SizedBox(

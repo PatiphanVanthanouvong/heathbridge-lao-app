@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:heathbridge_lao/package.dart';
+import 'package:heathbridge_lao/src/screens/list/list_screen.dart'; // Assuming this package provides HomeScreen, SettingScreen, and ConstantColor
 
 class ControllerPage extends StatefulWidget {
   const ControllerPage({super.key});
@@ -12,6 +15,7 @@ class _NaviPageState extends State<ControllerPage> {
 
   final List<Widget> _pages = const [
     HomeScreen(),
+    ListSearch(),
     SettingScreen(),
   ];
 
@@ -26,18 +30,16 @@ class _NaviPageState extends State<ControllerPage> {
           topRight: Radius.circular(20),
         ),
         child: SizedBox(
-          height: 80,
-          child: BottomNavigationBar(
-            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            currentIndex: _currentIndex,
-            onTap: (index) {
+          height: 60,
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
               setState(() {
                 _currentIndex = index;
               });
             },
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
+            destinations: <NavigationDestination>[
+              NavigationDestination(
                 icon: SizedBox(
                   width: 23,
                   height: 23,
@@ -46,9 +48,9 @@ class _NaviPageState extends State<ControllerPage> {
                     color: ConstantColor.colorMain,
                   ),
                 ),
-                label: "Home",
+                label: 'Home',
               ),
-              BottomNavigationBarItem(
+              NavigationDestination(
                 icon: SizedBox(
                   width: 23,
                   height: 23,
@@ -57,7 +59,18 @@ class _NaviPageState extends State<ControllerPage> {
                     color: ConstantColor.colorMain,
                   ),
                 ),
-                label: "Setting",
+                label: 'Search',
+              ),
+              NavigationDestination(
+                icon: SizedBox(
+                  width: 23,
+                  height: 23,
+                  child: SvgPicture.asset(
+                    'assets/icons/setting-icon.svg',
+                    color: ConstantColor.colorMain,
+                  ),
+                ),
+                label: 'Setting',
               ),
             ],
           ),
