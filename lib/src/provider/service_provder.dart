@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:hasura_connect/hasura_connect.dart';
-import 'package:heathbridge_lao/src/models/service_model.dart';
-import 'package:heathbridge_lao/src/utils/hasura_helper.dart';
+import 'package:heathbridge_lao/package.dart';
 
 class ServiceProvider extends ChangeNotifier {
   List<Services> _serviceList = [];

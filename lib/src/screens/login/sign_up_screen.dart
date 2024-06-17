@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:heathbridge_lao/package.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -9,9 +8,15 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController firstnameController = TextEditingController();
+  final TextEditingController lastnameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController telController = TextEditingController();
+  String? gender;
+  bool isCheckedTermsOfService = false;
+
   @override
   Widget build(BuildContext context) {
-    bool isChecked = false;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -30,12 +35,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 'Sign up',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               TextFormField(
+                controller: firstnameController,
                 decoration: InputDecoration(
-                  hintText: 'Name',
+                  hintText: 'First Name',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -43,6 +47,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                controller: lastnameController,
+                decoration: InputDecoration(
+                  hintText: 'Last Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: emailController,
                 decoration: InputDecoration(
                   hintText: 'Email',
                   border: OutlineInputBorder(
@@ -84,8 +99,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextFormField(
+                      controller: telController,
                       decoration: InputDecoration(
-                        hintText: 'Your mobile number',
+                        hintText: '205XXXXXXX',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -116,16 +132,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Text('Other'),
                   ),
                 ],
-                onChanged: (String? value) {},
+                onChanged: (String? value) {
+                  setState(() {
+                    gender = value;
+                  });
+                },
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
                   Checkbox(
-                    value: isChecked,
+                    value: isCheckedTermsOfService,
                     onChanged: (bool? value) {
                       setState(() {
-                        isChecked = value ?? false;
+                        isCheckedTermsOfService = value ?? false;
                       });
                     },
                   ),
@@ -170,7 +190,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  context.push("/setpassword");
+                  final firstname = firstnameController.text;
+                  final lastname = lastnameController.text;
+                  final email = emailController.text;
+                  final tel = telController.text;
+                  if (firstname.isNotEmpty &&
+                      lastname.isNotEmpty &&
+                      tel.isNotEmpty &&
+                      isCheckedTermsOfService) {
+                    print('Name: $firstname');
+                    print('Email: $email');
+                    print('tel: $tel');
+                    print('Gender: $gender');
+                    print('Terms Accepted: $isCheckedTermsOfService');
+
+                    context
+                        .push('/setpassword/$firstname/$lastname/$email/$tel/$gender');
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor:

@@ -1,23 +1,34 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:heathbridge_lao/package.dart';
-import 'package:heathbridge_lao/src/screens/list/list_screen.dart'; // Assuming this package provides HomeScreen, SettingScreen, and ConstantColor
 
-class ControllerPage extends StatefulWidget {
-  const ControllerPage({super.key});
+class Navigation extends StatefulWidget {
+  const Navigation({super.key});
 
   @override
-  State<ControllerPage> createState() => _NaviPageState();
+  State<Navigation> createState() => _NavigationState();
 }
 
-class _NaviPageState extends State<ControllerPage> {
+class _NavigationState extends State<Navigation> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
     HomeScreen(),
-    ListSearch(),
     SettingScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAuth();
+    });
+  }
+
+  void _checkAuth() {
+    var auth = FirebaseAuth.instance;
+    if (auth.currentUser == null) {
+      context.go("/");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +41,7 @@ class _NaviPageState extends State<ControllerPage> {
           topRight: Radius.circular(20),
         ),
         child: SizedBox(
-          height: 60,
+          height: 91,
           child: NavigationBar(
             selectedIndex: _currentIndex,
             onDestinationSelected: (index) {
@@ -49,17 +60,6 @@ class _NaviPageState extends State<ControllerPage> {
                   ),
                 ),
                 label: 'Home',
-              ),
-              NavigationDestination(
-                icon: SizedBox(
-                  width: 23,
-                  height: 23,
-                  child: SvgPicture.asset(
-                    'assets/icons/setting-icon.svg',
-                    color: ConstantColor.colorMain,
-                  ),
-                ),
-                label: 'Search',
               ),
               NavigationDestination(
                 icon: SizedBox(
