@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -64,6 +55,33 @@ class DefaultFirebaseOptions {
     projectId: 'finding-web',
     storageBucket: 'finding-web.appspot.com',
     iosBundleId: 'com.example.heathbridgeLao',
+  );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDkdSh3y1b9GXq9l4dBi0v9NEnIxo_t8dw',
+    appId: '1:279754083156:web:e46b863573a9381f91d6c1',
+    messagingSenderId: '279754083156',
+    projectId: 'finding-web',
+    authDomain: 'finding-web.firebaseapp.com',
+    storageBucket: 'finding-web.appspot.com',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBVHdaasr8uD-ftYuwEa7Hx82RZJbmikrU',
+    appId: '1:279754083156:ios:2a645bcd6f8df42c91d6c1',
+    messagingSenderId: '279754083156',
+    projectId: 'finding-web',
+    storageBucket: 'finding-web.appspot.com',
+    iosBundleId: 'com.example.heathbridgeLao',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDkdSh3y1b9GXq9l4dBi0v9NEnIxo_t8dw',
+    appId: '1:279754083156:web:7a357c19fd5e3bac91d6c1',
+    messagingSenderId: '279754083156',
+    projectId: 'finding-web',
+    authDomain: 'finding-web.firebaseapp.com',
+    storageBucket: 'finding-web.appspot.com',
   );
 
 }

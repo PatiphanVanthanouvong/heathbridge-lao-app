@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:heathbridge_lao/package.dart';
 
 class FacilityProvider extends ChangeNotifier {
@@ -73,8 +75,9 @@ class FacilityProvider extends ChangeNotifier {
         facilities(where: {
           _and: [
             { name: { _ilike: \$searchName } },
-            { facility_type: { name_en: { _ilike: \$searchTypeName } } },
-            { facility_type: { type: { _in: \$facilityTypes } } }
+            { facility_type: { name_la: { _ilike: \$searchTypeName } } },
+            { facility_type: { type: { _in: \$facilityTypes } } },
+         {status: {_eq: 1}}
           ]
         }) {
           fac_id
@@ -103,7 +106,7 @@ class FacilityProvider extends ChangeNotifier {
       'searchName': search.trim() == "" ? '%%' : '%${search.trim()}%',
       'searchTypeName':
           searchTypeName.trim() == "" ? '%%' : '%${searchTypeName.trim()}%',
-      'facilityTypes': facilityTypes ?? ["public", "private", "district"],
+      'facilityTypes': facilityTypes ?? ["ລັດ", "ເອກະຊົນ", "ເມືອງ"],
     });
     List<dynamic> facilitiesData = data['data']['facilities'];
     return facilitiesData.map((e) => Facilities.fromJson(e)).toList();

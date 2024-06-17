@@ -35,7 +35,7 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ),
                     child: const Text(
-                      'Create an account',
+                      'ສ້າງບັນຊີຜູ້ໃຊ້ໃໝ່',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -55,7 +55,7 @@ class WelcomeScreen extends StatelessWidget {
                       side: const BorderSide(color: ConstantColor.colorMain),
                     ),
                     child: const Text(
-                      'Sign In',
+                      'ໄປໜ້າຕໍ່ໄປ',
                       style: TextStyle(color: ConstantColor.colorMain),
                     ),
                   ),

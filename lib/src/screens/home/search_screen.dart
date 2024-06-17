@@ -3,8 +3,8 @@ import 'package:heathbridge_lao/package.dart';
 final TextEditingController _searchController = TextEditingController();
 List<String> _searchResults = [];
 List<String> _searchHistory = [];
-String _selectTypeName = 'All';
-String _selectedType = 'All';
+String _selectTypeName = 'ທັງໝົດ';
+String _selectedType = 'ທັງໝົດ';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -15,7 +15,7 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> _searchResults = [];
+  final List<String> _searchResults = [];
 
   List<String> _searchHistory = [];
   @override
@@ -38,10 +38,6 @@ class _SearchPageState extends State<SearchPage> {
 
   void _performSearch(String query) {
     setState(() {
-      _searchResults = List.generate(
-          10,
-          (index) =>
-              'Result $index for "$query" with filter "$_selectTypeName"');
       if (!_searchHistory.contains(query)) {
         _searchHistory.insert(0, query);
         _saveSearchHistory();
@@ -111,23 +107,6 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 ),
               ),
-              // Container(
-              //   margin: const EdgeInsets.only(right: 10),
-              //   decoration: BoxDecoration(
-              //     color: Colors.white,
-              //     borderRadius: BorderRadius.circular(10.0),
-              //     border: Border.all(
-              //       color: ConstantColor.colorMain,
-              //       width: 2.0,
-              //     ),
-              //   ),
-              //   width: 50,
-              //   height: 50,
-              //   child: IconButton(
-              //     onPressed: () {},
-              //     icon: const Icon(Icons.refresh),
-              //   ),
-              // ),
             ],
           ),
           Padding(
@@ -225,16 +204,15 @@ class _SearchBarState extends State<SearchBar> {
     widget.onSearch(query);
     // print(_selectedType);
     await context.read<FacilityProvider>().searchFacilities(
-        _selectTypeName == query || query == "All" ? "" : query,
-        _selectTypeName == "All" ? "" : _selectTypeName,
+        _selectTypeName == query || query == "ທັງໝົດ" ? "" : query,
+        _selectTypeName == "ທັງໝົດ" ? "" : _selectTypeName,
         facilityTypes:
-            _selectedType == "All" ? null : [_selectedType.toLowerCase()]);
-
+            _selectedType == "ທັງໝົດ" ? null : [_selectedType.toLowerCase()]);
+    Navigator.of(context, rootNavigator: true).pop();
     setState(() {
       _filteredSuggestions = [];
       _searchController.clear();
     });
-    Navigator.of(context).pop();
   }
 
   void _removeHistoryItem(String item) {
@@ -293,10 +271,10 @@ class FilterOptions extends StatelessWidget {
   });
 
   final List<String> _filters = [
-    'All',
-    'Hospital',
-    'Clinic',
-    'Pharmacy',
+    'ທັງໝົດ',
+    'ໂຮງໝໍ',
+    'ຄຣີນິກ',
+    'ຮ້ານຂາຍຢາ',
     'Ambulance'
   ];
 

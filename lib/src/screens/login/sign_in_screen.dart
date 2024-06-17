@@ -1,3 +1,8 @@
+import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heathbridge_lao/package.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -8,12 +13,72 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  bool _obscureText = true;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _phoneController = TextEditingController();
+  String? _errorMessage;
+
+  bool _validatePhoneNumber(String phone) {
+    // Lao phone numbers: +856 20 followed by 8 digits
+    final RegExp phoneRegExp = RegExp(r'^\+856 20\d{8}$');
+    return phoneRegExp.hasMatch(phone);
+  }
+
+  Future<void> _signInWithPhoneNumber() async {
+    if (_formKey.currentState!.validate()) {
+      final phoneNumber = _phoneController.text.trim();
+      String formattedPhoneNumber = '+856 20$phoneNumber';
+
+      if (!_validatePhoneNumber(formattedPhoneNumber)) {
+        log("Invalid phone number format.");
+        setState(() {
+          _errorMessage =
+              "ກະລຸນາໃສ່ຮູບເບບເບີໂທຂອງທ່ານໃຫ້ຖືກຕ້ອງ (+856 20 XXXXXXXX).";
+        });
+        return;
+      }
+
+      try {
+        await FirebaseAuth.instance.verifyPhoneNumber(
+          phoneNumber: formattedPhoneNumber,
+          verificationCompleted: (PhoneAuthCredential credential) {
+            log(credential.toString());
+          },
+          verificationFailed: (FirebaseAuthException e) {
+            log("Verification failed: $e");
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("ການຢືນຢັນຜິດພາດ: ${e.message}")),
+            );
+          },
+          codeSent: (String verificationId, int? resendToken) {
+            context.push("/otp/$verificationId");
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {},
+        );
+      } catch (e) {
+        log("Error during phone number verification: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("ພົບບັນຫາໃນການຢືນຢັນເບີໂທລະສັບ: $e")),
+        );
+      }
+    }
+  }
+
+  Future<void> _loginAnonymously() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isAnonymous', true);
+    context.push("/controller_page");
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
         title: const Text(
           'Back',
           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
@@ -23,146 +88,134 @@ class _SignInScreenState extends State<SignInScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 20),
-              const Text(
-                'Sign in',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Email or Phone Number',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(height: 20),
+                const Text(
+                  'ເຂົ້າສູ່ລະບົບ',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                obscureText: _obscureText,
-                decoration: InputDecoration(
-                  hintText: 'Enter Your Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'Forgot password?',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.go("/controller_page");
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ConstantColor.colorMain,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text('Sign In',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white)),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Row(
-                children: [
-                  Expanded(child: Divider(thickness: 1)),
+                const SizedBox(height: 20),
+                if (_errorMessage != null)
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Text('or'),
-                  ),
-                  Expanded(child: Divider(thickness: 1)),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: IconButton(
-                      icon: SvgPicture.asset("assets/icons/gmail-icon.svg"),
-                      onPressed: () {},
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(15),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/images/lao_flag.png',
+                        width: 24,
+                      ),
+                      const SizedBox(width: 5),
+                      const Text('+856 20'),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: TextFormField(
+                          keyboardType: TextInputType.phone,
+                          controller: _phoneController,
+                          decoration: const InputDecoration(
+                            hintText: 'XXXXXXXX',
+                            border: InputBorder.none,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'ກະລຸນາໃສ່ເບີໂທຂອງທ່ານ';
+                            }
+
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _signInWithPhoneNumber,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ConstantColor.colorMain,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: IconButton(
-                      icon: SvgPicture.asset("assets/icons/facebook-icon.svg"),
-                      onPressed: () {},
+                    child: const Text(
+                      'ເຂົ້າສູ່ລະບົບ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: IconButton(
-                      icon: SvgPicture.asset("assets/icons/apple-icon.svg"),
-                      onPressed: () {},
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                ),
+                const SizedBox(height: 20),
+                const Row(
                   children: [
-                    const Text("Don't have an account?"),
-                    TextButton(
-                      onPressed: () {
-                        context.push("/signup");
-                      },
-                      child: const Text("Sign Up",
-                          style: TextStyle(
-                              color: ConstantColor.colorMain,
-                              fontWeight: FontWeight.bold)),
+                    Expanded(child: Divider(thickness: 1)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text('ຫຼື'),
                     ),
+                    Expanded(child: Divider(thickness: 1)),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: TextButton(
+                    onPressed: _loginAnonymously,
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      side: const BorderSide(color: ConstantColor.colorMain),
+                    ),
+                    child: const Text(
+                      'ເຂົ້າສູ່ລະບົບເເບບບໍ່ມີບັນຊີ',
+                      style: TextStyle(color: ConstantColor.colorMain),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("ຍັງບໍ່ມີບັນຊີຜູ້ໃຊ້?"),
+                      TextButton(
+                        onPressed: () {
+                          context.push("/signup");
+                        },
+                        child: const Text(
+                          "ສະໝັກບັນຊີ",
+                          style: TextStyle(
+                            color: ConstantColor.colorMain,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

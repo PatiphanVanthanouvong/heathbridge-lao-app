@@ -22,34 +22,14 @@ class _ListSearchState extends State<ListSearch>
   final List<String> _dropdownItems1 = ['Item 1', 'Item 2', 'Item 3'];
   final List<String> _dropdownItems2 = ['Option A', 'Option B', 'Option C'];
 
-  late AnimationController _animationController;
-  late Animation<Offset> _animation;
-
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _animation = Tween<Offset>(
-      begin: const Offset(0, -1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
 
     // Fetch the facilities data when the widget is initialized
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FacilityProvider>().getFacInfo();
-    });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   context.read<FacilityProvider>().getFacInfo();
+    // });
   }
 
   void _showBottomSheet() {
@@ -194,9 +174,9 @@ class _ListSearchState extends State<ListSearch>
             children: [
               Consumer<FacilityProvider>(
                 builder: (context, provider, child) {
-                  if (provider.isGettingFacInfo) {
-                    return _buildLoadingSkeleton();
-                  }
+                  // if (provider.isGettingFacInfo) {
+                  //   return _buildLoadingSkeleton();
+                  // }
 
                   if (provider.facData.isEmpty) {
                     return const Center(
