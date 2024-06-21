@@ -202,17 +202,38 @@ class _SearchBarState extends State<SearchBar> {
 
   void _performSearch(String query) async {
     widget.onSearch(query);
-    // print(_selectedType);
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Prevents closing the dialog by clicking outside
+      builder: (BuildContext context) {
+        return const Dialog(
+          backgroundColor: Colors.transparent,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 10),
+              Text("Searching..."),
+            ],
+          ),
+        );
+      },
+    );
     await context.read<FacilityProvider>().searchFacilities(
         _selectTypeName == query || query == "ທັງໝົດ" ? "" : query,
         _selectTypeName == "ທັງໝົດ" ? "" : _selectTypeName,
         facilityTypes:
             _selectedType == "ທັງໝົດ" ? null : [_selectedType.toLowerCase()]);
-    Navigator.of(context, rootNavigator: true).pop();
-    setState(() {
-      _filteredSuggestions = [];
-      _searchController.clear();
-    });
+
+    if (mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true).pop();
+      setState(() {
+        _filteredSuggestions = [];
+        _searchController.clear();
+      });
+    }
   }
 
   void _removeHistoryItem(String item) {
@@ -221,7 +242,6 @@ class _SearchBarState extends State<SearchBar> {
 
   void _selectHistoryItem(String item) {
     _searchController.text = item;
-
     _performSearch(item);
   }
 
@@ -243,7 +263,6 @@ class _SearchBarState extends State<SearchBar> {
             controller: _searchController,
             decoration: InputDecoration(
               hintText: 'Search...',
-              // border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.search),
                 onPressed: () {

@@ -44,6 +44,8 @@ class ReviewProvider extends ChangeNotifier {
       if (response['data'] != null &&
           response['data']['insert_reviews']['affected_rows'] > 0) {
         await fetchReviews(facilityId); // Fetch reviews again after posting
+        await updateFacilityRatingCount(
+            facilityId); // Update facility rating count
         return true;
       }
       return false;
@@ -105,5 +107,41 @@ class ReviewProvider extends ChangeNotifier {
 
   Future<void> refreshReviews(String facId) async {
     await fetchReviews(facId);
+  }
+
+  Future<void> updateFacilityRatingCount(String facId) async {
+    final int totalReviews = _reviews.length;
+    final double averageRating =
+        _reviews.map((review) => review.rating!).reduce((a, b) => a + b) /
+            totalReviews;
+
+    const String updateFacilityMutation = """
+    mutation MyMutation(\$_eq1: uuid!, \$rating_count: String!) {
+      update_facilities(where: {fac_id: {_eq: \$_eq1}}, _set: {rating_count: \$rating_count}) {
+        affected_rows
+        returning {
+          rating_count
+        }
+      }
+    }
+    """;
+
+    try {
+      final response =
+          await _hasuraConnect.mutation(updateFacilityMutation, variables: {
+        '_eq1': facId,
+        'rating_count':
+            averageRating.toStringAsFixed(2), // format to 2 decimal places
+      });
+
+      if (response['data'] != null &&
+          response['data']['update_facilities']['affected_rows'] > 0) {
+        debugPrint("Facility rating count updated successfully.");
+      } else {
+        debugPrint("Failed to update facility rating count.");
+      }
+    } catch (e) {
+      debugPrint("Error updating facility rating count: $e");
+    }
   }
 }

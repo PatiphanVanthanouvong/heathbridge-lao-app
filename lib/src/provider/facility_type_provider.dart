@@ -17,7 +17,7 @@ class FacTypeProvider extends ChangeNotifier {
           fac_type_id
           name_en
           name_la
-          type
+          sub_type
         }
       }
     """;

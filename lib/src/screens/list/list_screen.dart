@@ -18,18 +18,26 @@ class _ListSearchState extends State<ListSearch>
 
   String? _selectedItem1;
   String? _selectedItem2;
-
-  final List<String> _dropdownItems1 = ['Item 1', 'Item 2', 'Item 3'];
-  final List<String> _dropdownItems2 = ['Option A', 'Option B', 'Option C'];
+  List<String> _dropdownItems1 = [];
+  List<String> _dropdownItems2 = [];
 
   @override
   void initState() {
     super.initState();
 
-    // Fetch the facilities data when the widget is initialized
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   context.read<FacilityProvider>().getFacInfo();
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ServiceProvider>().fetchServices().then((services) {
+        setState(() {
+          _dropdownItems1 =
+              services.map((service) => service.nameLa ?? "").toList();
+          _dropdownItems2 =
+              services.map((service) => service.type ?? "").toList();
+
+          _dropdownItems1.insert(0, 'All Services');
+          _dropdownItems2.insert(0, 'All Types');
+        });
+      });
+    });
   }
 
   void _showBottomSheet() {
@@ -112,59 +120,117 @@ class _ListSearchState extends State<ListSearch>
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60), // Adjust the height as needed
-        child: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.transparent,
-          elevation: 0, // Remove elevation if not needed
-          centerTitle: true,
-          actions: [
-            Container(
-              margin: const EdgeInsets.only(right: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-                border: Border.all(
-                  color: ConstantColor.colorMain,
-                  width: 2.0,
-                ),
-              ),
-              width: 50,
-              height: 50,
-              child: IconButton(
-                onPressed: _showBottomSheet,
-                icon: const Icon(Icons.menu),
-              ),
-            ),
-          ],
-          title: InkWell(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.0),
-                border: Border.all(
-                  color: ConstantColor.colorMain,
-                  width: 2.0,
-                ),
-              ),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                  border: InputBorder.none,
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {
-                      _performSearch(_searchController.text);
-                    },
+        preferredSize:
+            const Size.fromHeight(130), // Adjust the height as needed
+        child: Column(
+          children: [
+            AppBar(
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.transparent,
+              elevation: 0, // Remove elevation if not needed
+              centerTitle: true,
+              actions: [
+                Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                      color: ConstantColor.colorMain,
+                      width: 2.0,
+                    ),
+                  ),
+                  width: 50,
+                  height: 50,
+                  child: IconButton(
+                    onPressed: _showBottomSheet,
+                    icon: const Icon(Icons.menu),
                   ),
                 ),
-                onChanged: _updateFilteredSuggestions,
-                onSubmitted: _performSearch,
+              ],
+              title: InkWell(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15.0),
+                    border: Border.all(
+                      color: ConstantColor.colorMain,
+                      width: 2.0,
+                    ),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      border: InputBorder.none,
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          _performSearch(_searchController.text);
+                        },
+                      ),
+                    ),
+                    onChanged: _updateFilteredSuggestions,
+                    onSubmitted: _performSearch,
+                  ),
+                ),
               ),
             ),
-          ),
+            SizedBox(
+              height: 50, // Adjust height as needed
+              child: Consumer<FacTypeProvider>(
+                  builder: (context, provider, child) {
+                if (provider.isGettingService) {
+                  return const Center(
+                    child: Text('Loading....'),
+                  );
+                }
+                if (provider.typeList.isEmpty) {
+                  return const Center(
+                    child: Text('No facility types available'),
+                  );
+                }
+                String selectTypeName = 'ທັງໝົດ';
+                String selectedType = 'ທັງໝົດ';
+                return ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  // itemCount: provider.typeList.length, // Number of chips
+                  itemCount: AppConstants().factype.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // FacTypeModel facility = provider.typeList[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: GestureDetector(
+                        onTap: () async {
+                          var query = AppConstants().factype[index];
+                          var selectTypeName = AppConstants().factype[index];
+                          await context
+                              .read<FacilityProvider>()
+                              .searchFacilities(
+                                  selectTypeName == query || query == "ທັງໝົດ"
+                                      ? ""
+                                      : query,
+                                  selectTypeName == "ທັງໝົດ"
+                                      ? ""
+                                      : selectTypeName,
+                                  facilityTypes: selectedType == "ທັງໝົດ"
+                                      ? null
+                                      : [selectedType.toLowerCase()]);
+                          _searchController.text = query;
+                        },
+                        // child: Chip(
+                        //   label: Text("${facility.nameLa} ${facility.type}"),
+                        // ),
+                        child: Chip(label: Text(AppConstants().factype[index])),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+          ],
         ),
       ),
       body: Padding(
@@ -266,7 +332,7 @@ class _ListSearchState extends State<ListSearch>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${facility.facilityType?.type} ${facility.facilityType?.nameEn} ", // Assuming facilityTye has a nameLa field
+                                  "${facility.facilityType?.nameLa}${facility.facilityType?.sub_type} ", // Assuming facilityTye has a nameLa field
                                   style: const TextStyle(
                                       fontSize: 14, color: Colors.black),
                                 ),

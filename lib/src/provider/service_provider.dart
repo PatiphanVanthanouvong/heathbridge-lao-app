@@ -17,12 +17,19 @@ class ServiceProvider extends ChangeNotifier {
         type
       }
     }
-    """;
+  """;
 
     var data = await connection.query(request, variables: {});
     if (data['data'] != null && data['data']['services'] != null) {
       List<dynamic> serviceData = data['data']['services'];
-      return serviceData.map((e) => Services.fromJson(e)).toList();
+      return serviceData
+          .map((e) => Services.fromJson(e))
+          .map((service) => Services(
+              nameEn: service.nameEn ?? "", // Handle null with ?? ""
+              nameLa: service.nameLa,
+              serviceId: service.serviceId,
+              type: service.type ?? "")) // Handle null with ?? ""
+          .toList();
     } else {
       return [];
     }

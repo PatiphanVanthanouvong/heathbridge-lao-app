@@ -42,6 +42,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/images/
+    - assets/images/app-logo.png
     - assets/images/clinic-marker.png
     - assets/images/hospitol-marker.png
     - assets/images/pharmacy-marker.png

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:heathbridge_lao/src/screens/setting/widgets/setting_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:heathbridge_lao/package.dart';
@@ -32,120 +33,212 @@ class _SettingScreenState extends State<SettingScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text("ຕັ້ງຄ່າ"),
+        backgroundColor: ConstantColor.colorMain,
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: _showLogoutConfirmationDialog,
-            icon: const Icon(Icons.logout_outlined),
+        title: const Text(
+          'ຕັ້ງຄ່າ',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w400,
+            color: Colors.white,
           ),
-        ],
+        ),
       ),
-      backgroundColor: Colors.grey.shade200,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Divider(),
-              Text(
-                "ທົ່ວໄປ",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditProfileScreen(),
-                      ),
-                    );
-                  },
-                  child: Card(
-                    color: Colors.white,
-                    elevation: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Consumer<UserProvider>(
-                            builder: (context, userProvider, child) {
-                              if (userProvider.userModel.isEmpty) {
-                                return Text(
-                                  'Logged in as a Anonymous User',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                );
-                              } else {
-                                final user = userProvider.userModel.first;
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Name: ${user.firstname} ${user.lastname}',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    const Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Icon(Icons.arrow_right_alt),
-                                    ),
-                                    Text(
-                                      'Phone Number: ${user.tel}',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
-                          ),
-                        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(2),
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: 180,
+                    height: 180,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        "assets/images/app-logo.png",
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                ),
+                  Consumer<UserProvider>(
+                    builder: (context, userProvider, child) {
+                      if (userProvider.userModel.isEmpty) {
+                        return Column(
+                          children: [
+                            Text(
+                              'ທ່ານເຂົ້າສູ່ລະບົບເເບບບໍ່ຢືນຢັນຕົວຕົນ',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 20),
+                            AnimatedButton(
+                              width: 140,
+                              height: 40,
+                              isFixedHeight: false,
+                              buttonTextStyle: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                              borderRadius: BorderRadius.circular(30),
+                              text: 'ເຂົ້າສູ່ລະບົບ',
+                              color: ConstantColor.colorMain,
+                              pressEvent: () {
+                                context.push("/signin");
+                              },
+                            ),
+                          ],
+                        );
+                      } else {
+                        final user = userProvider.userModel.first;
+                        return Container(
+                          width: 300,
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(
+                                10), // Optional: Adds rounded corners
+                            border: Border.all(
+                              color: Colors.grey, // Outline color
+                              width: 1, // Outline width
+                            ),
+                          ),
+                          child: Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.person_pin_rounded,
+                                      color: Colors.black,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(
+                                      width: 4,
+                                    ),
+                                    Text(
+                                      "${user.firstname} ${user.lastname}",
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 2),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.email,
+                                      color: Colors.black,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      'ອິເມວ: ${user.email}',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.phone,
+                                      color: Colors.black,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      'ເບີໂທລະສັບ: ${user.tel}',
+                                      style: const TextStyle(
+                                        fontSize:
+                                            14, // Adjust font size as needed
+                                        fontWeight: FontWeight
+                                            .w400, // Adjust font weight as needed
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                AnimatedButton(
+                                  width: 140,
+                                  height: 40,
+                                  isFixedHeight: false,
+                                  buttonTextStyle: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                  borderRadius: BorderRadius.circular(30),
+                                  text: 'ເເກ້ໄຂໜ້າຜູ້ໃຊ້',
+                                  color: ConstantColor.colorMain,
+                                  pressEvent: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const EditProfileScreen()),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  const Divider(
+                    thickness: 2,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  ProfileWidget(
+                    title: "ກ່ຽວກັບພວກເຮົາ",
+                    icon: Icons.info,
+                    onPressed: () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => AboutUs()),
+                      // );
+                    },
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  ProfileWidget(
+                    title: "ອອກຈາກລະບົບ",
+                    icon: Icons.logout,
+                    textColor: Colors.black,
+                    endIcon: true,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    onPressed: () {
+                      _showLogoutConfirmationDialog();
+                    },
+                  ),
+                ],
               ),
-              const Divider(),
-              Text(
-                "General",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Text('ລາຍລະອຽດຜູ້ໃຊ້ງານ'),
-                    SizedBox(width: 8),
-                  ],
-                ),
-                onTap: () {
-                  // Navigate to About Us screen
-                },
-                trailing: const Icon(Icons.info_outline),
-              ),
-              const Divider(),
-              Text(
-                "Appearance",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Text('About Us'),
-                    SizedBox(width: 8),
-                    Icon(Icons.info_outline),
-                  ],
-                ),
-                onTap: () {
-                  // Navigate to About Us screen
-                },
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -161,8 +254,8 @@ class _SettingScreenState extends State<SettingScreen> {
       context: context,
       dialogType: DialogType.warning,
       animType: AnimType.topSlide,
-      title: 'Logout',
-      desc: 'Are you sure you want to logout?',
+      title: 'ອອກຈາກລະບົບ',
+      desc: 'ທ່ານຕ້ອງການອອກຈາກບັນຊີລະບົບບໍ?',
       btnCancelOnPress: () {},
       btnOkOnPress: () {
         handleLogout(context);

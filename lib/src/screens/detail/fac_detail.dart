@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:heathbridge_lao/package.dart';
 import 'package:heathbridge_lao/src/provider/review_provider.dart';
@@ -16,6 +18,7 @@ class _FacDetailState extends State<FacDetail>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   var auth = FirebaseAuth.instance;
+  var peopleCount;
   void openGoogleMaps(String latitude, String longitude) async {
     String googleMapsUrl =
         "https://www.google.com/maps/search/?api=1&query=$latitude,$longitude";
@@ -29,10 +32,10 @@ class _FacDetailState extends State<FacDetail>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ReviewProvider>(context, listen: false)
+      peopleCount = Provider.of<ReviewProvider>(context, listen: false)
           .fetchReviews(widget.facId);
     });
   }
@@ -46,10 +49,7 @@ class _FacDetailState extends State<FacDetail>
 
   void _handleTabSelection() {
     if (_tabController.index == 1) {
-      // Refresh reviews when the "Review" tab is selected
       context.read<ReviewProvider>().refreshReviews(widget.facId);
-      // Provider.of<ReviewProvider>(context, listen: false)
-      //     .refreshReviews(widget.facId);
     }
   }
 
@@ -157,42 +157,45 @@ class _FacDetailState extends State<FacDetail>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "${provider.oneFac.facilityType?.nameLa}  ${provider.oneFac.facilityType?.type}", // Assuming facilityTye has a nameLa field
+                                      "${provider.oneFac.facilityType?.nameLa}  ${provider.oneFac.facilityType?.sub_type}", // Assuming facilityTye has a nameLa field
                                       style: const TextStyle(
                                           fontSize: 14, color: Colors.black),
                                     ),
                                     const SizedBox(height: 5),
                                     Row(
                                       children: [
-                                        Text("($rating)",
-                                            style: const TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.grey)),
+                                        Text(
+                                          "(${provider.oneFac.ratingCount ?? 0})",
+                                          style: const TextStyle(
+                                              fontSize: 13, color: Colors.grey),
+                                        ),
                                         const SizedBox(width: 5),
                                         SizedBox(
                                           height: 15,
-                                          width: 75,
-                                          child: ListView.builder(
-                                            padding: EdgeInsets.zero,
-                                            scrollDirection: Axis.horizontal,
+                                          width: 120,
+                                          child: RatingBar.builder(
+                                            itemSize: 15,
+                                            initialRating:
+                                                3, // Use the average rating
+                                            minRating: 0.1,
+                                            maxRating: 5.0,
+                                            direction: Axis.horizontal,
+                                            ignoreGestures: true,
                                             itemCount: 5,
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              return Icon(
-                                                Icons.star,
-                                                color: index < rating
-                                                    ? Colors.orange
-                                                    : Colors.grey,
-                                                size: 15,
-                                              );
+                                            itemPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 0.0),
+                                            itemBuilder: (context, _) =>
+                                                const Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                            ),
+                                            onRatingUpdate: (rating) {
+                                              // checkAuthGoReview();
                                             },
                                           ),
                                         ),
                                         const SizedBox(width: 5),
-                                        Text("($reviews)",
-                                            style: const TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.grey)),
                                       ],
                                     ),
                                     const SizedBox(height: 5),
@@ -222,7 +225,7 @@ class _FacDetailState extends State<FacDetail>
                                       ),
                                     ),
                                     const SizedBox(height: 5),
-                                    const Text("Directions",
+                                    const Text("ຊອກທິດທາງ",
                                         style: TextStyle(fontSize: 13)),
                                   ],
                                 )
@@ -238,9 +241,8 @@ class _FacDetailState extends State<FacDetail>
                       TabBar(
                         controller: _tabController,
                         tabs: const [
-                          Tab(text: "Overview"),
-                          Tab(text: "Review"),
-                          Tab(text: "About"),
+                          Tab(text: "ຂໍ້ມູນພາບລວມ"),
+                          Tab(text: "ການສະເເດງຄວາມຄິດເຫັນ"),
                         ],
                       ),
                       // TabBarView
@@ -339,7 +341,7 @@ class _FacDetailState extends State<FacDetail>
                                                 padding: const EdgeInsets.only(
                                                     top: 3.0),
                                                 child: Text(
-                                                  "${serviceDetail.service?.nameEn ?? 'No service name'} (${serviceDetail.service?.type ?? 'No service type'})",
+                                                  "${serviceDetail.service?.nameLa ?? 'No service name'} (${serviceDetail.service?.type_name ?? 'No service type'})",
                                                   style: const TextStyle(
                                                       fontSize: 14,
                                                       color: Colors.black),
@@ -351,170 +353,162 @@ class _FacDetailState extends State<FacDetail>
                                   ]),
                             ),
                             //* REVIEW SCREEN
-                            Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    const CircleAvatar(
-                                      radius: 16,
-                                      child: Icon(Icons.person),
-                                    ),
-                                    RatingBar.builder(
-                                      // ignoreGestures: true,
-                                      initialRating: 1.5,
-                                      minRating: 1,
-                                      maxRating: 5,
-                                      direction: Axis.horizontal,
-                                      allowHalfRating: true,
-                                      itemCount: 5,
-                                      itemPadding: const EdgeInsets.symmetric(
-                                          horizontal: 3.0),
-                                      itemBuilder: (context, _) => const Icon(
-                                        Icons.star,
-                                        color: Colors.amber,
+                            SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      const CircleAvatar(
+                                        radius: 16,
+                                        child: Icon(Icons.person),
                                       ),
-                                      onRatingUpdate: (rating) {
-                                        // checkAuthGoReview();
-                                        if (auth.currentUser == null) {
-                                          AwesomeDialog(
-                                            context: context,
-                                            dialogType: DialogType.warning,
-                                            headerAnimationLoop: false,
-                                            animType: AnimType.bottomSlide,
-                                            title:
-                                                'ທ່ານຍັງບໍ່ໄດ້ເຂົ້າບັນຊີໃນລະບົບ',
-                                            desc:
-                                                'ກະລຸນາເຂົ້າຊື່ໃຊ້ລະບົບກ່ອນ...',
-                                            buttonsTextStyle: const TextStyle(
-                                                color: Colors.white),
-                                            showCloseIcon: true,
-                                            btnCancelOnPress: () {},
-                                            btnOkOnPress: () {
-                                              context.push("/signin");
-                                            },
-                                          ).show();
-                                        } else {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ReviewScreen(
-                                                      initialRating: rating,
-                                                      facId: widget.facId,
-                                                    )),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
-                                  ],
-                                ),
-                                const Divider(),
-                                Consumer<ReviewProvider>(
-                                  builder: (context, reviewProvider, child) {
-                                    if (reviewProvider.isLoading) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-                                    if (reviewProvider.reviews.isEmpty) {
-                                      return const Center(
-                                          child: Text(
-                                              "ຍັງບໍ່ມີການສະເເດງຄວາມຄິດເຫັນ..."));
-                                    } else {
-                                      return ListView.builder(
-                                        itemCount:
-                                            reviewProvider.reviews.length,
-                                        shrinkWrap: true,
-                                        itemBuilder: (context, index) {
-                                          final review =
-                                              reviewProvider.reviews[index];
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 20),
-                                            child: Card(
-                                              color: Colors.grey.shade200,
-                                              elevation: 2,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                              ),
-                                              margin:
+                                      RatingBar.builder(
+                                        // ignoreGestures: true,
+                                        initialRating: 1.5,
+                                        minRating: 1,
+                                        maxRating: 5,
+                                        direction: Axis.horizontal,
+                                        allowHalfRating: true,
+                                        itemCount: 5,
+                                        itemPadding: const EdgeInsets.symmetric(
+                                            horizontal: 3.0),
+                                        itemBuilder: (context, _) => const Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                        ),
+                                        onRatingUpdate: (rating) {
+                                          // checkAuthGoReview();
+                                          if (auth.currentUser == null) {
+                                            AwesomeDialog(
+                                              context: context,
+                                              dialogType: DialogType.warning,
+                                              headerAnimationLoop: false,
+                                              animType: AnimType.bottomSlide,
+                                              title:
+                                                  'ທ່ານຍັງບໍ່ໄດ້ເຂົ້າບັນຊີໃນລະບົບ',
+                                              desc:
+                                                  'ກະລຸນາເຂົ້າຊື່ໃຊ້ລະບົບກ່ອນ...',
+                                              buttonsTextStyle: const TextStyle(
+                                                  color: Colors.white),
+                                              showCloseIcon: true,
+                                              btnCancelOnPress: () {},
+                                              btnOkOnPress: () {
+                                                context.push("/signin");
+                                              },
+                                            ).show();
+                                          } else {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ReviewScreen(
+                                                        initialRating: rating,
+                                                        facId: widget.facId,
+                                                      )),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                    ],
+                                  ),
+                                  const Divider(),
+                                  Consumer<ReviewProvider>(
+                                    builder: (context, reviewProvider, child) {
+                                      if (reviewProvider.isLoading) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                      if (reviewProvider.reviews.isEmpty) {
+                                        return const Center(
+                                            child: Text(
+                                                "ຍັງບໍ່ມີການສະເເດງຄວາມຄິດເຫັນ..."));
+                                      } else {
+                                        return ListView.builder(
+                                          itemCount:
+                                              reviewProvider.reviews.length,
+                                          shrinkWrap: true,
+                                          itemBuilder: (context, index) {
+                                            final review =
+                                                reviewProvider.reviews[index];
+                                            return Padding(
+                                              padding:
                                                   const EdgeInsets.symmetric(
-                                                      vertical: 8),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "${review.user?.firstname ?? 'No Name'} ${review.user?.lastname ?? ''}",
-                                                      style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    const SizedBox(height: 6),
-                                                    RatingBarIndicator(
-                                                      rating:
-                                                          review.rating ?? 0,
-                                                      itemBuilder:
-                                                          (context, _) =>
-                                                              const Icon(
-                                                        Icons.star,
-                                                        color: Colors.amber,
+                                                      horizontal: 20),
+                                              child: Card(
+                                                color: Colors.grey.shade200,
+                                                elevation: 2,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 8),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "${review.user?.firstname ?? 'No Name'} ${review.user?.lastname ?? ''}",
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
                                                       ),
-                                                      itemCount: 5,
-                                                      itemSize: 20,
-                                                      direction:
-                                                          Axis.horizontal,
-                                                    ),
-                                                    const SizedBox(height: 6),
-                                                    Text(
-                                                      review.description ??
-                                                          'No Review',
-                                                      style: const TextStyle(
-                                                          fontSize: 14),
-                                                    ),
-                                                    const SizedBox(height: 6),
-                                                    Text(
-                                                      "${review.createdAt ?? 'Date not available'}",
-                                                      style: const TextStyle(
-                                                          fontSize: 12,
-                                                          color: Colors.grey),
-                                                    ),
-                                                  ],
+                                                      const SizedBox(height: 6),
+                                                      RatingBarIndicator(
+                                                        rating:
+                                                            review.rating ?? 0,
+                                                        itemBuilder:
+                                                            (context, _) =>
+                                                                const Icon(
+                                                          Icons.star,
+                                                          color: Colors.amber,
+                                                        ),
+                                                        itemCount: 5,
+                                                        itemSize: 20,
+                                                        direction:
+                                                            Axis.horizontal,
+                                                      ),
+                                                      const SizedBox(height: 6),
+                                                      Text(
+                                                        review.description ??
+                                                            'No Review',
+                                                        style: const TextStyle(
+                                                            fontSize: 14),
+                                                      ),
+                                                      const SizedBox(height: 6),
+                                                      Text(
+                                                        "${review.createdAt ?? 'Date not available'}",
+                                                        style: const TextStyle(
+                                                            fontSize: 12,
+                                                            color: Colors.grey),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-
-                            //* ABOUT SCREEN
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Divider(),
-                                  ]),
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),

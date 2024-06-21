@@ -33,7 +33,7 @@ export 'src/screens/detail/fac_detail.dart';
 export 'src/screens/login/otp_screen.dart';
 
 //provider
-export 'src/provider/service_provder.dart';
+export 'src/provider/service_provider.dart';
 
 //provider
 export 'src/provider/user_provider.dart';

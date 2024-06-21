@@ -13,26 +13,26 @@ class FacTypeModel {
   final String? facTypeId;
   final String? nameEn;
   final String? nameLa;
-  final String? type;
+  final String? sub_type;
 
   FacTypeModel({
     this.facTypeId,
     this.nameEn,
     this.nameLa,
-    this.type,
+    this.sub_type,
   });
 
   factory FacTypeModel.fromJson(Map<String, dynamic> json) => FacTypeModel(
         facTypeId: json["fac_type_id"],
         nameEn: json["name_en"],
         nameLa: json["name_la"],
-        type: json["type"],
+        sub_type: json["sub_type"],
       );
 
   Map<String, dynamic> toJson() => {
         "fac_type_id": facTypeId,
         "name_en": nameEn,
         "name_la": nameLa,
-        "type": type,
+        "sub_type": sub_type,
       };
 }

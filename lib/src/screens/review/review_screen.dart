@@ -97,7 +97,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ReviewScreen'),
+        title: const Text('ການສະເເດງຄວາມຄິດເຫັນ'),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -137,7 +137,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       decoration: const InputDecoration(
                         contentPadding:
                             EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                        hintText: 'Share your thoughts about this facility',
+                        hintText:
+                            'ເເບ່ງປັນປະສົບການ ຫຼື ຄວາມຄິດຂອງທ່ານກ່ຽວກັບສະຖານທີ່ນີ້',
                         hintStyle: TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(15.0)),
@@ -167,7 +168,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       : ElevatedButton(
                           style: raisedButtonStyle,
                           onPressed: _postReview,
-                          child: const Text('Post Review'),
+                          child: const Text('ບັນທຶກການສະເເດງຄວາມຄິດເຫັນ'),
                         ),
                 ],
               ),

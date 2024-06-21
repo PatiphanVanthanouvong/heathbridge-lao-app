@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:developer';
 import 'package:heathbridge_lao/package.dart';
+import 'package:heathbridge_lao/src/models/facility_type.model.dart';
 import 'package:latlong2/latlong.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     initialPage: 0,
     viewportFraction: 0.5,
   );
-  bool _isDialogShown = false;
+  final bool _isDialogShown = false;
   var currentLocation = AppConstants.myLocation;
   LatLng? userLocation;
   int selectedIndex = 0;
@@ -32,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       context.read<FacilityProvider>().getFacInfo();
       context.read<FacTypeProvider>().getFacType();
     });
+    userLocation = currentLocation;
   }
 
   Future<void> _getLocation() async {
@@ -52,47 +54,49 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  void _showLoadingDialog(BuildContext context) {
-    if (!_isDialogShown) {
-      _isDialogShown = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const Dialog(
-              child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(width: 20),
-                    Text("Loading..."),
-                  ],
-                ),
-              ),
-            );
-          },
-        ).then((_) {
-          // Ensure to reset the flag after dialog is dismissed
-          if (mounted) {
-            // Check if the state is still mounted before calling setState
-            setState(() {
-              _isDialogShown = false;
-            });
-          }
-        });
-      });
-    }
-  }
+  // void _showLoadingDialog(BuildContext context) {
+  //   if (!_isDialogShown) {
+  //     _isDialogShown = true;
+  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+  //       showDialog(
+  //         context: context,
+  //         barrierDismissible: false,
+  //         builder: (BuildContext context) {
+  //           return const Dialog(
+  //             child: Padding(
+  //               padding: EdgeInsets.all(20.0),
+  //               child: Row(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   CircularProgressIndicator(),
+  //                   SizedBox(width: 20),
+  //                   Text("Loading..."),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       ).then((_) {
+  //         // Ensure to reset the flag after dialog is dismissed
+  //         if (mounted) {
+  //           // Check if the state is still mounted before calling setState
+  //           setState(() {
+  //             _isDialogShown = false;
+  //           });
+  //         }
+  //       });
+  //     });
+  //   }
+  // }
 
-  void _hideLoadingDialog(BuildContext context) {
-    if (_isDialogShown) {
-      _isDialogShown = false;
-      Navigator.of(context, rootNavigator: true).pop();
-    }
-  }
+  // void _hideLoadingDialog(BuildContext context) {
+  //   if (_isDialogShown) {
+  //     _isDialogShown = false;
+  //     if (Navigator.of(context, rootNavigator: true).canPop()) {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   // itemCount: provider.typeList.length, // Number of chips
                   itemCount: AppConstants().factype.length,
                   itemBuilder: (BuildContext context, int index) {
-                    // FacTypeModel facility = provider.typeList[index];
+                    FacTypeModel facility = provider.typeList[index];
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: GestureDetector(
@@ -211,20 +215,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       body: Consumer<FacilityProvider>(builder: (context, provider, child) {
-        // Show loading dialog when fetching data
-        if (provider.isGettingFacInfo) {
-          _showLoadingDialog(context);
-        } else {
-          _hideLoadingDialog(context);
-        }
-
-        // Build UI based on provider state
-        if (provider.facData.isEmpty) {
-          return const Center(
-            child: Text('ບໍ່ພົບສະຖານທີ່ທີ່ຄົ້ນຫາ'),
-          );
-        }
-
         final markers = provider.facData.map((facility) {
           final lat = double.tryParse(facility.latitude ?? '0') ?? 0;
           final lng = double.tryParse(facility.longitude ?? '0') ?? 0;
@@ -322,140 +312,155 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 MarkerLayer(markers: markers),
               ],
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 75,
-              height: MediaQuery.of(context).size.height * 0.2,
-              child: PageView.builder(
-                controller: pageController,
-                onPageChanged: (value) {
-                  setState(() {
-                    selectedIndex = value;
-                    final facility = provider.facData[value];
-                    currentLocation = LatLng(
-                      double.tryParse(facility.latitude ?? '0') ?? 0,
-                      double.tryParse(facility.longitude ?? '0') ?? 0,
-                    );
-                  });
-                  _animatedMapMove(currentLocation, 14);
-                },
-                itemCount: provider.facData.length,
-                itemBuilder: (_, index) {
-                  final facility = provider.facData[index];
-                  return GestureDetector(
-                    onTap: () {
-                      context
-                          .read<FacilityProvider>()
-                          .getDetailEach(facId: facility.facId!);
-                      showBottomSheet(
-                        context: context,
-                        builder: (ctx) => FacDetail(facId: facility.facId!),
+            Consumer<FacilityProvider>(builder: (context, provider, child) {
+              if (provider.isGettingFacInfo) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              if (provider.facData.isEmpty) {
+                return const Center(
+                  child: Text('ບໍ່ພົບສະຖານທີ່ທີ່ຄົ້ນຫາ'),
+                );
+              }
+              return Positioned(
+                left: 0,
+                right: 0,
+                bottom: 75,
+                height: MediaQuery.of(context).size.height * 0.2,
+                child: PageView.builder(
+                  controller: pageController,
+                  onPageChanged: (value) {
+                    setState(() {
+                      selectedIndex = value;
+                      final facility = provider.facData[value];
+                      currentLocation = LatLng(
+                        double.tryParse(facility.latitude ?? '0') ?? 0,
+                        double.tryParse(facility.longitude ?? '0') ?? 0,
                       );
-                    },
-                    child: Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      color: Colors.white,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                              ),
-                              child: Container(
-                                height: 90,
-                                width: double.infinity,
-                                color: Colors.white,
-                                child: facility.imageUrl == null ||
-                                        facility.imageUrl == ""
-                                    ? const Center(
-                                        child: Text(
-                                          "ຍັງບໍ່ມີຮູບພາບ",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      )
-                                    : Image.network(
-                                        facility.imageUrl!,
-                                        fit: BoxFit.fitWidth,
-                                        loadingBuilder: (BuildContext context,
-                                            Widget child,
-                                            ImageChunkEvent? loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child;
-                                          } else {
+                    });
+                    _animatedMapMove(currentLocation, 14);
+                  },
+                  itemCount: provider.facData.length,
+                  itemBuilder: (_, index) {
+                    final facility = provider.facData[index];
+                    return GestureDetector(
+                      onTap: () {
+                        context
+                            .read<FacilityProvider>()
+                            .getDetailEach(facId: facility.facId!);
+                        showBottomSheet(
+                          context: context,
+                          builder: (ctx) => FacDetail(facId: facility.facId!),
+                        );
+                      },
+                      child: Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        color: Colors.white,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(10),
+                                  topRight: Radius.circular(10),
+                                ),
+                                child: Container(
+                                  height: 90,
+                                  width: double.infinity,
+                                  color: Colors.white,
+                                  child: facility.imageUrl == null ||
+                                          facility.imageUrl == ""
+                                      ? const Center(
+                                          child: Text(
+                                            "ຍັງບໍ່ມີຮູບພາບ",
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        )
+                                      : Image.network(
+                                          facility.imageUrl!,
+                                          fit: BoxFit.fitWidth,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent?
+                                                  loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            } else {
+                                              return const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            }
+                                          },
+                                          errorBuilder: (BuildContext context,
+                                              Object error,
+                                              StackTrace? stackTrace) {
                                             return const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
+                                              child: Text(
+                                                "ຮູບມີການຜິດພາດ",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
                                             );
-                                          }
-                                        },
-                                        errorBuilder: (BuildContext context,
-                                            Object error,
-                                            StackTrace? stackTrace) {
-                                          return const Center(
-                                            child: Text(
-                                              "ຮູບມີການຜິດພາດ",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                          },
+                                        ),
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    facility.name ?? '',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                      overflow: TextOverflow.ellipsis,
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      facility.name ?? '',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        facility.facilityType?.nameLa ?? '',
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
+                                    Row(
+                                      children: [
+                                        Text(
+                                          facility.facilityType?.nameLa ?? '',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 2),
-                                      Text(
-                                        facility.facilityType?.type ?? '',
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
+                                        const SizedBox(width: 2),
+                                        Text(
+                                          facility.facilityType?.sub_type ?? '',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
-                                ],
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
+                    );
+                  },
+                ),
+              );
+            }),
             Positioned(
               right: 15,
               bottom: 235,
