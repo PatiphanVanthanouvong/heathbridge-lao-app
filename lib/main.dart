@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:heathbridge_lao/firebase_options.dart';
 import 'package:heathbridge_lao/package.dart';
+import 'package:heathbridge_lao/src/provider/facility_type_provider.dart';
+import 'package:heathbridge_lao/src/provider/review_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +29,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FacilityProvider()),
         ChangeNotifierProvider(create: (_) => ServiceProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => ReviewProvider()),
+        ChangeNotifierProvider(create: (_) => FacTypeProvider()),
       ],
       child: MaterialApp.router(
         title: 'Flutter Demo',

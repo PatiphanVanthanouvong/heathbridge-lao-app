@@ -82,27 +82,27 @@ class Facilities {
 
 class FacilityType {
   final String? nameEn;
-  final String? type;
+  final String? sub_type;
   final dynamic description;
   final String? nameLa;
 
   FacilityType({
     this.nameEn,
-    this.type,
+    this.sub_type,
     this.description,
     this.nameLa,
   });
 
   factory FacilityType.fromJson(Map<String, dynamic> json) => FacilityType(
         nameEn: json["name_en"],
-        type: json["type"],
+        sub_type: json["sub_type"],
         description: json["description"],
         nameLa: json["name_la"],
       );
 
   Map<String, dynamic> toJson() => {
         "name_en": nameEn,
-        "type": type,
+        "sub_type": sub_type,
         "description": description,
         "name_la": nameLa,
       };
@@ -127,20 +127,24 @@ class ServiceDetail {
 
 class Service {
   final String? nameEn;
-  final String? type;
+  final String? nameLa;
+  final String? type_name;
 
   Service({
     this.nameEn,
-    this.type,
+    this.type_name,
+    this.nameLa,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) => Service(
         nameEn: json["name_en"],
-        type: json["type"],
+        type_name: json["type_name"],
+        nameLa: json["name_la"],
       );
 
   Map<String, dynamic> toJson() => {
         "name_en": nameEn,
-        "type": type,
+        "type_name": type_name,
+        "name_la": nameLa,
       };
 }

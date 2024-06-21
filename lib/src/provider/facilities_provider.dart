@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:heathbridge_lao/package.dart';
 
 class FacilityProvider extends ChangeNotifier {
@@ -11,6 +13,8 @@ class FacilityProvider extends ChangeNotifier {
   bool get isGettingFacInfo => _isGettingFacInfo;
 
   bool isGettingDetails = false;
+
+  bool isGettingFacWithService = false;
 
   Future<void> getFacInfo() async {
     _isGettingFacInfo = true;
@@ -73,8 +77,9 @@ class FacilityProvider extends ChangeNotifier {
         facilities(where: {
           _and: [
             { name: { _ilike: \$searchName } },
-            { facility_type: { name_en: { _ilike: \$searchTypeName } } },
-            { facility_type: { type: { _in: \$facilityTypes } } }
+            { facility_type: { name_la: { _ilike: \$searchTypeName } } },
+            { facility_type: { sub_type: { _in: \$facilityTypes } } },
+         {status: {_eq: 1}}
           ]
         }) {
           fac_id
@@ -92,7 +97,7 @@ class FacilityProvider extends ChangeNotifier {
           facility_type {
             name_en
             name_la
-            type
+            sub_type
             description
           }
         }
@@ -103,7 +108,103 @@ class FacilityProvider extends ChangeNotifier {
       'searchName': search.trim() == "" ? '%%' : '%${search.trim()}%',
       'searchTypeName':
           searchTypeName.trim() == "" ? '%%' : '%${searchTypeName.trim()}%',
-      'facilityTypes': facilityTypes ?? ["public", "private", "district"],
+      'facilityTypes': facilityTypes ?? ["ສູນກາງ", "ເອກະຊົນ", "ເມືອງ", "ນ້ອຍ"],
+    });
+    List<dynamic> facilitiesData = data['data']['facilities'];
+    return facilitiesData.map((e) => Facilities.fromJson(e)).toList();
+  }
+
+  Future<List<Facilities>> searchByDistrict({
+    String search = "",
+    String searchTypeName = "",
+    List<String>? facilityTypes,
+  }) async {
+    HasuraConnect connection = HasuraHelper.hasuraHelper;
+    String request = """
+      query facilities(\$searchName: String = "%", \$searchTypeName: String = "%", \$facilityTypes: [String!] = []) {
+        facilities(where: {
+          _and: [
+            { name: { _ilike: \$searchName } },
+            { facility_type: { name_la: { _ilike: \$searchTypeName } } },
+            { facility_type: { sub_type: { _in: \$facilityTypes } } },
+         {status: {_eq: 1}}
+          ]
+        }) {
+          fac_id
+          fac_type_id
+          name
+          village
+          district
+          province
+          contact_info
+          Latitude
+          Longitude
+          status
+          rating_count
+          image_url
+          facility_type {
+            name_en
+            name_la
+            sub_type
+            description
+          }
+        }
+      }
+    """;
+
+    var data = await connection.query(request, variables: {
+      'searchName': search.trim() == "" ? '%%' : '%${search.trim()}%',
+      'searchTypeName':
+          searchTypeName.trim() == "" ? '%%' : '%${searchTypeName.trim()}%',
+      'facilityTypes': facilityTypes ?? ["ສູນກາງ", "ເອກະຊົນ", "ເມືອງ", "ນ້ອຍ"],
+    });
+    List<dynamic> facilitiesData = data['data']['facilities'];
+    return facilitiesData.map((e) => Facilities.fromJson(e)).toList();
+  }
+
+  Future<List<Facilities>> searchByServices({
+    String search = "",
+    String searchTypeName = "",
+    List<String>? facilityTypes,
+  }) async {
+    HasuraConnect connection = HasuraHelper.hasuraHelper;
+    String request = """
+      query facilities(\$searchName: String = "%", \$searchTypeName: String = "%", \$facilityTypes: [String!] = []) {
+        facilities(where: {
+          _and: [
+            { name: { _ilike: \$searchName } },
+            { facility_type: { name_la: { _ilike: \$searchTypeName } } },
+            { facility_type: { sub_type: { _in: \$facilityTypes } } },
+         {status: {_eq: 1}}
+          ]
+        }) {
+          fac_id
+          fac_type_id
+          name
+          village
+          district
+          province
+          contact_info
+          Latitude
+          Longitude
+          status
+          rating_count
+          image_url
+          facility_type {
+            name_en
+            name_la
+            sub_type
+            description
+          }
+        }
+      }
+    """;
+
+    var data = await connection.query(request, variables: {
+      'searchName': search.trim() == "" ? '%%' : '%${search.trim()}%',
+      'searchTypeName':
+          searchTypeName.trim() == "" ? '%%' : '%${searchTypeName.trim()}%',
+      'facilityTypes': facilityTypes ?? ["ສູນກາງ", "ເອກະຊົນ", "ເມືອງ", "ນ້ອຍ"],
     });
     List<dynamic> facilitiesData = data['data']['facilities'];
     return facilitiesData.map((e) => Facilities.fromJson(e)).toList();
@@ -118,14 +219,15 @@ Future<Facilities> _getOneFacilities({String? id}) async {
     fac_id
     facility_type {
       name_en
-      type
+      sub_type
       description
       name_la
     }
     service_details {
       service {
         name_en
-        type
+        name_la
+        type_name
       }
     }
     Latitude
